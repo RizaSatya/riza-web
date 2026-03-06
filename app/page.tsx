@@ -22,9 +22,9 @@ export default function Home() {
   const posts = getAllPosts().slice(0, 3);
 
   return (
-    <div className="mx-auto max-w-5xl px-6">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6">
       {/* Hero */}
-      <section className="relative py-24 sm:py-32">
+      <section className="relative py-16 sm:py-24 lg:py-32">
         {/* Gradient orb behind text */}
         <div className="pointer-events-none absolute -top-20 left-1/2 h-[400px] w-[600px] -translate-x-1/2 rounded-full bg-accent/5 blur-[100px]" />
 

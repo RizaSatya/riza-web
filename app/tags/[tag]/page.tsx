@@ -25,7 +25,7 @@ export default async function TagPage({ params }: PageProps) {
   const posts = getPostsByTag(tag);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-20">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12 sm:py-20">
       <div className="animate-in" style={{ "--stagger": 0 } as React.CSSProperties}>
         <Link
           href="/tags"

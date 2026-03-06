@@ -12,7 +12,7 @@ export default function TagsPage() {
   const maxCount = Math.max(...tags.map((t) => t.count));
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-20">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12 sm:py-20">
       <div className="animate-in" style={{ "--stagger": 0 } as React.CSSProperties}>
         <p className="font-mono text-sm text-accent">tags</p>
         <h1 className="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">

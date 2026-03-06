@@ -16,7 +16,7 @@ export function PostHeader({ post }: { post: Post }) {
         <span>{post.readingTime}</span>
       </div>
 
-      <h1 className="mt-4 font-display text-4xl font-bold tracking-tight sm:text-5xl">
+      <h1 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
         {post.frontMatter.title}
       </h1>
 

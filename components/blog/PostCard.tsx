@@ -12,14 +12,14 @@ export function PostCard({
 }) {
   return (
     <article
-      className="animate-in group relative rounded-xl bg-card/50 p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_40px_-8px_var(--glow)]"
+      className="animate-in group relative rounded-xl bg-card/50 p-4 sm:p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_40px_-8px_var(--glow)]"
       style={{ "--stagger": index } as React.CSSProperties}
     >
       {/* Left accent bar */}
       <div className="absolute left-0 top-6 bottom-6 w-0.5 rounded-full bg-border transition-colors duration-300 group-hover:bg-accent" />
 
       <Link href={`/blog/${post.slug}`} className="block">
-        <h2 className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight transition-colors group-hover:text-accent">
+        <h2 className="flex items-start gap-2 font-display text-lg sm:text-xl font-semibold tracking-tight transition-colors group-hover:text-accent">
           {post.frontMatter.title}
           <ArrowRight className="h-4 w-4 -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
         </h2>

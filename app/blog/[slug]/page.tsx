@@ -58,7 +58,7 @@ export default async function PostPage({ params }: PageProps) {
   const toc = extractTOC(post.content);
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-20">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-20">
       <PostHeader post={post} />
 
       <div className="relative flex gap-16">
