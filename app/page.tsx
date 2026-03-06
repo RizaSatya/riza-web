@@ -1,5 +1,6 @@
 import { getAllPosts } from "@/lib/posts";
 import { PostCard } from "@/components/blog/PostCard";
+import { ChatTeaser } from "@/components/chat/ChatTeaser";
 import { Github, Linkedin, Mail } from "lucide-react";
 import Link from "next/link";
 
@@ -86,6 +87,11 @@ export default function Home() {
             <Mail className="h-5 w-5" />
           </a>
         </div>
+      </section>
+
+      {/* Chat Teaser */}
+      <section className="py-8">
+        <ChatTeaser />
       </section>
 
       {/* Skills */}

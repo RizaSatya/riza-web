@@ -249,7 +249,7 @@ export function ChatInterface() {
               clear conversation
             </button>
             <p className="font-mono text-xs text-muted">
-              powered by Gemini 2.5 Flash Lite
+              powered by Gemini 2.5 Flash
             </p>
           </div>
         )}

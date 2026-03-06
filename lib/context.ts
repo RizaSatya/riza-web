@@ -2,11 +2,26 @@ import { readFileSync } from "fs";
 import path from "path";
 import { getAllPosts } from "./posts";
 
+function readCV(): string {
+  return readFileSync(path.join(process.cwd(), "content/cv.md"), "utf-8");
+}
+
+export function buildPostSystemPrompt(postTitle: string, postContent: string): string {
+  return `You are an AI assistant embedded in Riza Satyabudhi's blog post titled "${postTitle}".
+Your job is to help readers understand this specific blog post and answer questions about it.
+
+Guidelines:
+- Focus exclusively on the content of this blog post. Answer questions about it in depth.
+- Be concise, technical where appropriate, and conversational.
+- If asked something completely unrelated to the post, gently redirect back to it.
+- Speak in third person about Riza (e.g. "Riza explains that...").
+
+=== THIS BLOG POST: ${postTitle} ===
+${postContent}`;
+}
+
 export function buildSystemPrompt(): string {
-  const cv = readFileSync(
-    path.join(process.cwd(), "content/cv.md"),
-    "utf-8"
-  );
+  const cv = readCV();
 
   const posts = getAllPosts();
   const postsText = posts

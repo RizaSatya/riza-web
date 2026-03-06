@@ -9,6 +9,7 @@ import { getAllSlugs, getPostBySlug } from "@/lib/posts";
 import { extractTOC } from "@/lib/toc";
 import { PostHeader } from "@/components/blog/PostHeader";
 import { TableOfContents } from "@/components/blog/TableOfContents";
+import { PostChat } from "@/components/blog/PostChat";
 import { mdxComponents } from "@/components/mdx/MDXComponents";
 
 interface PageProps {
@@ -88,8 +89,9 @@ export default async function PostPage({ params }: PageProps) {
           />
         </article>
 
-        <aside className="hidden w-56 shrink-0 lg:block">
+        <aside className="hidden w-64 shrink-0 lg:block">
           <TableOfContents items={toc} />
+          <PostChat postTitle={post.frontMatter.title} postContent={post.content} />
         </aside>
       </div>
 

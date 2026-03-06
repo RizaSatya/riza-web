@@ -16,7 +16,7 @@ export default function ChatPage() {
           Ask me anything
         </h1>
         <p className="mt-3 text-muted">
-          An AI trained on my CV and writing. Ask about my experience, skills, or blog posts.
+          Ask about my experience, skills, or blog posts.
         </p>
       </div>
 
