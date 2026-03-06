@@ -26,6 +26,16 @@ export function PostHeader({ post }: { post: Post }) {
         ))}
       </div>
 
+      {/* Mobile CTA for chat */}
+      <div className="mt-6 lg:hidden">
+        <a
+          href="#post-chat"
+          className="inline-flex items-center gap-2 rounded-lg border border-accent/20 bg-accent/5 px-3 py-2 font-mono text-xs text-accent transition-colors hover:bg-accent/10 hover:border-accent/40"
+        >
+          <span>💬 Ask about this post, powered by Gemini 2.5 Flash </span>
+        </a>
+      </div>
+
       {/* Accent underline */}
       <div className="mt-8 h-px bg-gradient-to-r from-accent/40 via-accent/10 to-transparent" />
     </header>

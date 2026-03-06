@@ -87,6 +87,11 @@ export default async function PostPage({ params }: PageProps) {
               },
             }}
           />
+
+          {/* Mobile chat at end of article */}
+          <div id="post-chat" className="mt-12 border-t border-border pt-8 lg:hidden">
+            <PostChat postTitle={post.frontMatter.title} postContent={post.content} />
+          </div>
         </article>
 
         <aside className="hidden w-64 shrink-0 lg:block">
