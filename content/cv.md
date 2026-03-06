@@ -18,12 +18,12 @@ Senior Software Engineer specializing in Platform Engineering and Backend system
 * **Zero-Downtime Migrations:** Led the migration of a legacy in-house configuration management service used company-wide with zero downtime.
 * **Technologies:** Golang, Kafka, Redis, Prometheus, Grafana, New Relic.
 
-### Junior Software Engineer (Frontend, Backend) | GoLife | Aug 2019 – March 2020
+### Junior Software Engineer (Frontend, Backend) | GoTo | Aug 2019 – March 2020
 * **Frontend Leadership:** Led the development of the company’s profile page, advocating for and implementing **GatsbyJS** to improve SEO and performance.
 * **Backend Support:** Contributed to various Ruby on Rails microservices and collaborated with PMs on technical feasibility and project planning.
 * **Technologies:** JavaScript, React, GatsbyJS, Redux, Ruby on Rails.
 
-### Software Engineer Intern (Frontend, Backend) | GoLife | Aug 2018 – Aug 2019
+### Software Engineer Intern (Frontend, Backend) | GoTo | Aug 2018 – Aug 2019
 * **Internal Tooling:** Led front-end development for an internal portal project under senior mentorship.
 * **BFF Pattern:** Contributed to "Backend for Frontend" services using Ruby on Rails to streamline data delivery to the UI.
 * **Technologies:** JavaScript, CSS, React, Redux, Ruby on Rails.
