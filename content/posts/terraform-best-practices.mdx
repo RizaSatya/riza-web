@@ -1,0 +1,112 @@
+---
+title: "Terraform Best Practices for Production Infrastructure"
+date: "2026-01-10"
+excerpt: "Patterns and practices for managing production infrastructure with Terraform at scale."
+tags: ["terraform", "iac", "devops", "cloud"]
+draft: false
+---
+
+## Introduction
+
+After years of managing infrastructure with Terraform across dozens of projects, these are the patterns that have consistently proven their value.
+
+## Project Structure
+
+A well-organized Terraform project scales much better:
+
+```
+infrastructure/
+├── modules/
+│   ├── networking/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│   ├── compute/
+│   └── database/
+├── environments/
+│   ├── dev/
+│   │   ├── main.tf
+│   │   ├── terraform.tfvars
+│   │   └── backend.tf
+│   ├── staging/
+│   └── production/
+└── shared/
+    └── state-backend/
+```
+
+## Remote State Management
+
+Always use remote state with locking:
+
+```hcl
+terraform {
+  backend "s3" {
+    bucket         = "my-terraform-state"
+    key            = "production/terraform.tfstate"
+    region         = "ap-southeast-1"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
+}
+```
+
+### State Locking
+
+State locking prevents concurrent modifications:
+
+```bash
+# If you need to force-unlock (use with caution)
+terraform force-unlock LOCK_ID
+```
+
+## Module Design
+
+### Keep Modules Focused
+
+Each module should manage a single concern:
+
+```hcl
+module "vpc" {
+  source = "./modules/networking"
+
+  cidr_block         = "10.0.0.0/16"
+  availability_zones = ["ap-southeast-1a", "ap-southeast-1b"]
+  environment        = var.environment
+}
+
+module "eks" {
+  source = "./modules/compute"
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnet_ids
+  cluster_version = "1.28"
+}
+```
+
+## Validation and Testing
+
+### Variable Validation
+
+```hcl
+variable "environment" {
+  type = string
+  validation {
+    condition     = contains(["dev", "staging", "production"], var.environment)
+    error_message = "Environment must be dev, staging, or production."
+  }
+}
+```
+
+### Plan Before Apply
+
+```bash
+# Always review the plan
+terraform plan -out=tfplan
+
+# Apply only the reviewed plan
+terraform apply tfplan
+```
+
+## Conclusion
+
+Good Terraform practices compound over time. Invest in module design, state management, and validation early — your future self will thank you.

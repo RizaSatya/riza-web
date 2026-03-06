@@ -1,0 +1,124 @@
+---
+title: "Building Production-Ready CI/CD Pipelines with GitHub Actions"
+date: "2025-12-15"
+excerpt: "Design robust CI/CD pipelines using GitHub Actions with reusable workflows, matrix builds, and deployment strategies."
+tags: ["cicd", "github-actions", "devops", "automation"]
+draft: false
+---
+
+## Introduction
+
+A well-designed CI/CD pipeline is the backbone of modern software delivery. In this post, I'll walk through building production-grade pipelines with GitHub Actions.
+
+## Pipeline Architecture
+
+A typical pipeline follows this flow:
+
+1. **Lint & Format** — catch style issues early
+2. **Test** — unit, integration, and e2e tests
+3. **Build** — compile and package artifacts
+4. **Deploy** — push to staging, then production
+
+## Basic Workflow
+
+```yaml
+name: CI/CD Pipeline
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
+```
+
+### Matrix Builds
+
+Matrix builds let you test across multiple configurations simultaneously. This is critical for libraries that need to support multiple runtimes:
+
+```yaml
+strategy:
+  matrix:
+    os: [ubuntu-latest, macos-latest]
+    python-version: ['3.10', '3.11', '3.12']
+    exclude:
+      - os: macos-latest
+        python-version: '3.10'
+```
+
+## Reusable Workflows
+
+Stop copying YAML between repos. Create reusable workflows:
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to ${{ inputs.environment }}
+        run: |
+          aws ecs update-service \
+            --cluster my-cluster \
+            --service my-service \
+            --force-new-deployment
+```
+
+## Docker Build & Push
+
+```yaml
+- name: Build and push Docker image
+  uses: docker/build-push-action@v5
+  with:
+    context: .
+    push: true
+    tags: |
+      ghcr.io/${{ github.repository }}:latest
+      ghcr.io/${{ github.repository }}:${{ github.sha }}
+    cache-from: type=gha
+    cache-to: type=gha,mode=max
+```
+
+## Security Scanning
+
+Always include security checks in your pipeline:
+
+```bash
+# Run Trivy for container scanning
+trivy image --severity HIGH,CRITICAL myapp:latest
+
+# Check for secrets
+gitleaks detect --source . --verbose
+```
+
+## Conclusion
+
+GitHub Actions provides a powerful, flexible platform for CI/CD. Start with simple workflows and iterate — add caching, matrix builds, and reusable workflows as your needs grow.

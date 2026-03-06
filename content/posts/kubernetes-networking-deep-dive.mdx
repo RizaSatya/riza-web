@@ -1,0 +1,121 @@
+---
+title: "Kubernetes Networking Deep Dive"
+date: "2025-11-20"
+excerpt: "A thorough walkthrough of CNI plugins, eBPF, and network policies in Kubernetes clusters."
+tags: ["kubernetes", "networking", "devops"]
+draft: false
+---
+
+## Introduction
+
+Kubernetes networking can be one of the most challenging aspects of running clusters at scale. In this post, we'll explore the networking model from the ground up — from CNI plugins to eBPF-based solutions.
+
+## The Kubernetes Networking Model
+
+Every Pod in a Kubernetes cluster gets its own IP address. This means you don't need to explicitly create links between Pods and you almost never need to deal with mapping container ports to host ports.
+
+### CNI Plugins
+
+The Container Network Interface (CNI) is a specification for configuring network interfaces in Linux containers. Here's how a basic CNI configuration looks:
+
+```json
+{
+  "cniVersion": "1.0.0",
+  "name": "mynet",
+  "type": "bridge",
+  "bridge": "mynet0",
+  "isDefaultGateway": true,
+  "ipMasq": true,
+  "ipam": {
+    "type": "host-local",
+    "subnet": "10.22.0.0/16",
+    "routes": [
+      { "dst": "0.0.0.0/0" }
+    ]
+  }
+}
+```
+
+### Popular CNI Options
+
+| Plugin  | Data Plane | eBPF Support | Encryption |
+|---------|-----------|-------------|------------|
+| Calico  | iptables/eBPF | Yes | WireGuard |
+| Cilium  | eBPF | Native | WireGuard/IPsec |
+| Flannel | VXLAN | No | No |
+
+## Working with Network Policies
+
+Network policies allow you to control traffic flow at the IP address or port level. Let's create a policy that restricts ingress:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-allow
+  namespace: production
+spec:
+  podSelector:
+    matchLabels:
+      app: api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: frontend
+      ports:
+        - protocol: TCP
+          port: 8080
+```
+
+You can verify the policy is working with:
+
+```bash
+kubectl get networkpolicy -n production
+kubectl describe networkpolicy api-allow -n production
+```
+
+## eBPF: The Future of Kubernetes Networking
+
+eBPF (extended Berkeley Packet Filter) allows running sandboxed programs in the Linux kernel without changing kernel source code or loading kernel modules.
+
+### Why eBPF?
+
+1. **Performance** — bypasses iptables chains entirely
+2. **Observability** — deep visibility into network flows
+3. **Security** — kernel-level enforcement of policies
+
+### Installing Cilium
+
+```bash
+helm repo add cilium https://helm.cilium.io/
+helm install cilium cilium/cilium \
+  --namespace kube-system \
+  --set kubeProxyReplacement=true \
+  --set k8sServiceHost=${API_SERVER_IP} \
+  --set k8sServicePort=${API_SERVER_PORT}
+```
+
+## Debugging Network Issues
+
+When things go wrong, here's your debugging toolkit:
+
+```bash
+# Check pod connectivity
+kubectl exec -it debug-pod -- ping 10.0.0.5
+
+# Inspect DNS resolution
+kubectl exec -it debug-pod -- nslookup kubernetes.default
+
+# Trace network path
+kubectl exec -it debug-pod -- traceroute 10.0.0.5
+
+# Check service endpoints
+kubectl get endpoints my-service
+```
+
+## Conclusion
+
+Understanding Kubernetes networking is essential for anyone managing clusters in production. Start with the basics — Pod networking and Services — then gradually explore advanced topics like eBPF and network policies as your needs grow.
