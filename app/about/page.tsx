@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Github, Linkedin, Mail } from "lucide-react";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "About",
@@ -74,6 +75,59 @@ export default function AboutPage() {
         </div>
       </div>
 
+      {/* Certifications */}
+      <div
+        className="animate-in mt-16"
+        style={{ "--stagger": 4 } as React.CSSProperties}
+      >
+        <div className="flex items-center gap-4">
+          <h2 className="font-mono text-xs uppercase tracking-widest text-muted">
+            Certifications
+          </h2>
+          <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+        </div>
+
+        <div className="mt-6 flex flex-wrap gap-4">
+          <a
+            href="https://www.credly.com/badges/2d0b0f87-466b-416a-9228-092d35e8d29c"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-4 rounded-xl bg-card/50 px-5 py-4 transition-all duration-300 hover:bg-card hover:shadow-[0_0_20px_-4px_var(--glow)]"
+          >
+            <Image
+              src="/images/cka.png"
+              alt="CKA Badge"
+              width={56}
+              height={56}
+              className="transition-transform duration-300 group-hover:scale-110"
+            />
+            <div>
+              <p className="text-sm font-medium">Certified Kubernetes Administrator</p>
+              <p className="mt-0.5 font-mono text-xs text-muted">CKA · CNCF</p>
+            </div>
+          </a>
+
+          <a
+            href="https://www.credly.com/badges/6ecdfc03-32e9-46df-ac87-b7f28aafacde"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-4 rounded-xl bg-card/50 px-5 py-4 transition-all duration-300 hover:bg-card hover:shadow-[0_0_20px_-4px_var(--glow)]"
+          >
+            <Image
+              src="/images/tf.png"
+              alt="Terraform Associate Badge"
+              width={56}
+              height={56}
+              className="transition-transform duration-300 group-hover:scale-110"
+            />
+            <div>
+              <p className="text-sm font-medium">HashiCorp Certified: Terraform Associate</p>
+              <p className="mt-0.5 font-mono text-xs text-muted">HCTA0-003 · HashiCorp</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
       {/* Experience */}
       <div
         className="animate-in mt-16"
@@ -105,10 +159,12 @@ export default function AboutPage() {
         </div>
       </div>
 
+      
+
       {/* Contact */}
       <div
         className="animate-in mt-16"
-        style={{ "--stagger": 4 } as React.CSSProperties}
+        style={{ "--stagger": 5 } as React.CSSProperties}
       >
         <div className="flex items-center gap-4">
           <h2 className="font-mono text-xs uppercase tracking-widest text-muted">
