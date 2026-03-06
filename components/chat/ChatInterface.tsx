@@ -16,6 +16,7 @@ function renderMarkdown(text: string) {
 
 const STARTER_QUESTIONS = [
   "Tell me about yourself",
+  "Tell me about your work experience",
   "What tech stack do you use?",
   "Tell me about your recent blog posts",
   "How can I contact you?",
