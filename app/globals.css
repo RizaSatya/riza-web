@@ -48,6 +48,7 @@ body {
   color: var(--foreground);
   background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
   background-size: 24px 24px;
+  overflow-x: clip;
 }
 
 /* Noise texture overlay */
@@ -141,6 +142,13 @@ body > * {
   padding: 1rem;
   padding-top: 2.5rem;
   overflow-x: auto;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  [data-rehype-pretty-code-figure] pre {
+    font-size: 0.75rem;
+  }
 }
 
 /* Terminal top bar with dots */

@@ -23,7 +23,7 @@ export default function Home() {
   const posts = getAllPosts().slice(0, 3);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6">
+    <div className="mx-auto max-w-5xl overflow-x-hidden px-4 sm:px-6">
       {/* Hero */}
       <section className="relative py-16 sm:py-24 lg:py-32">
         {/* Gradient orb behind text */}
