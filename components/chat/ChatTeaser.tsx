@@ -40,7 +40,7 @@ export function ChatTeaser() {
               </div>
               <div className="rounded-xl border border-accent/15 bg-accent/5 px-4 py-3">
                 <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
-                  I&apos;ve been running production Kubernetes clusters on AWS and GCP for several years — multi-tenant EKS setups, custom controllers in Go, and GitOps via ArgoCD. I&apos;ve also written a deep-dive on Kubernetes networking if you want the details.
+                  I am a Senior Platform Engineer with a foundation in full-stack and backend development, specializing in cloud modernization and high-throughput systems. From scaling services to 20,000 req/sec to automating GCP infrastructure, I focus on building the internal tools and reliability frameworks that empower developers to ship with confidence. I thrive at the intersection of automation, zero-downtime migrations, and developer experience.
                 </p>
               </div>
             </div>

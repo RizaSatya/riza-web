@@ -49,14 +49,6 @@ export default function Home() {
           Senior Software Engineer &middot; DevOps &amp; Backend
         </p>
 
-        <p
-          className="animate-in relative mt-6 max-w-xl text-base leading-relaxed text-muted"
-          style={{ "--stagger": 3 } as React.CSSProperties}
-        >
-          I build and scale backend systems and cloud infrastructure. I write
-          about the tools and patterns that make production systems reliable.
-        </p>
-
         <div
           className="animate-in relative mt-8 flex items-center gap-3"
           style={{ "--stagger": 4 } as React.CSSProperties}

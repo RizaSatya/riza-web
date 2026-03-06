@@ -9,7 +9,6 @@ export const metadata: Metadata = {
 
 export default function TagsPage() {
   const tags = getAllTags();
-  const maxCount = Math.max(...tags.map((t) => t.count));
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12 sm:py-20">
@@ -26,26 +25,18 @@ export default function TagsPage() {
           <Link
             key={tag}
             href={`/tags/${tag}`}
-            className="animate-in group relative overflow-hidden rounded-xl bg-card/50 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_30px_-5px_var(--glow)]"
+            className="animate-in group flex items-center justify-between rounded-xl bg-card/50 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_30px_-5px_var(--glow)]"
             style={{ "--stagger": i + 1 } as React.CSSProperties}
           >
-            {/* Background fill bar showing relative popularity */}
-            <div
-              className="absolute inset-y-0 left-0 bg-accent/5 transition-all duration-300 group-hover:bg-accent/10"
-              style={{ width: `${(count / maxCount) * 100}%` }}
-            />
-
-            <div className="relative flex items-center justify-between">
-              <span className="font-mono text-sm">
-                <span className="text-accent/50">#</span>
-                <span className="transition-colors group-hover:text-accent">
-                  {tag}
-                </span>
+            <span className="font-mono text-sm">
+              <span className="text-accent/50">#</span>
+              <span className="transition-colors group-hover:text-accent">
+                {tag}
               </span>
-              <span className="font-mono text-xs text-muted">
-                {count} post{count !== 1 ? "s" : ""}
-              </span>
-            </div>
+            </span>
+            <span className="font-mono text-xs text-muted tabular-nums rounded-full border border-border px-2 py-0.5">
+              {count}
+            </span>
           </Link>
         ))}
       </div>

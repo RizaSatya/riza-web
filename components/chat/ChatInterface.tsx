@@ -22,9 +22,9 @@ const STARTER_QUESTIONS = [
 ];
 
 const BLOG_POST_SUGGESTIONS = [
-  { title: "Kubernetes Networking Deep Dive", question: "What are the key takeaways of Kubernetes Networking Deep Dive?" },
-  { title: "Terraform Best Practices", question: "What are the key takeaways of Terraform Best Practices?" },
-  { title: "CI/CD Pipelines with GitHub Actions", question: "What are the key takeaways of CI/CD Pipelines with GitHub Actions?" },
+  { title: "Kubernetes Networking Deep Dive", question: "What are the key takeaways of Kubernetes Networking Deep Dive blog?" },
+  { title: "Terraform Best Practices", question: "What are the key takeaways of Terraform Best Practices blog?" },
+  { title: "CI/CD Pipelines with GitHub Actions", question: "What are the key takeaways of CI/CD Pipelines with GitHub Actions blog?" },
 ];
 
 const STORAGE_KEY = "chat-page-messages";
