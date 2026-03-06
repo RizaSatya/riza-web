@@ -15,26 +15,44 @@ function renderMarkdown(text: string) {
 }
 
 const STARTER_QUESTIONS = [
-  "What's your experience with Kubernetes?",
-  "What programming languages do you use?",
+  "Tell me about yourself",
+  "What tech stack do you use?",
   "Tell me about your recent blog posts",
   "How can I contact you?",
 ];
 
 const BLOG_POST_SUGGESTIONS = [
-  { title: "Kubernetes Networking Deep Dive", question: "What did Riza learn from writing about Kubernetes networking?" },
-  { title: "Terraform Best Practices", question: "What are the key takeaways from Riza's post on Terraform best practices?" },
-  { title: "CI/CD Pipelines with GitHub Actions", question: "What did Riza cover in his post about building CI/CD pipelines with GitHub Actions?" },
+  { title: "Kubernetes Networking Deep Dive", question: "What are the key takeaways of Kubernetes Networking Deep Dive?" },
+  { title: "Terraform Best Practices", question: "What are the key takeaways of Terraform Best Practices?" },
+  { title: "CI/CD Pipelines with GitHub Actions", question: "What are the key takeaways of CI/CD Pipelines with GitHub Actions?" },
 ];
 
+const STORAGE_KEY = "chat-page-messages";
+
 export function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      localStorage.removeItem(STORAGE_KEY);
+    } else {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    }
+  }, [messages]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -189,7 +207,25 @@ export function ChatInterface() {
           {showSuggestions && (
             <div className="absolute bottom-full mb-2 left-0 right-0 rounded-xl border border-border bg-card shadow-lg overflow-hidden z-10">
               <p className="px-4 py-2 font-mono text-xs uppercase tracking-widest text-muted border-b border-border">
-                ask about what Riza learned on his blog posts
+                general
+              </p>
+              {STARTER_QUESTIONS.map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => {
+                    sendMessage(q);
+                    setShowSuggestions(false);
+                  }}
+                  disabled={isLoading}
+                  className="w-full text-left px-4 py-3 text-sm text-foreground/80 hover:bg-accent/5 hover:text-foreground transition-colors disabled:opacity-50"
+                >
+                  <span className="text-accent font-mono text-xs mr-2">&#62;</span>
+                  {q}
+                </button>
+              ))}
+              <p className="px-4 py-2 font-mono text-xs uppercase tracking-widest text-muted border-t border-b border-border">
+                blog posts
               </p>
               {BLOG_POST_SUGGESTIONS.map((s) => (
                 <button
@@ -216,7 +252,7 @@ export function ChatInterface() {
               className="flex items-center gap-1 font-mono text-xs text-muted transition-colors hover:text-accent disabled:opacity-50 shrink-0"
               aria-label="Blog post suggestions"
             >
-              blog posts
+              suggestions
               <ChevronDown className={`h-3 w-3 transition-transform ${showSuggestions ? "rotate-180" : ""}`} />
             </button>
             <span className="text-border select-none">|</span>

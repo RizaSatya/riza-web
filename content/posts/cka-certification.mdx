@@ -1,0 +1,68 @@
+---
+title: "How I Passed the Certified Kubernetes Administrator Exam"
+date: "2024-09-01"
+excerpt: "My preparation strategy and exam experience for the CKA certification, including study resources and practical tips."
+tags: ["kubernetes"]
+draft: false
+---
+
+## Understanding the CKA Exam Structure
+
+The CKA exam is a hands-on, performance-based test that lasts for two hours. It covers a wide range of topics including:
+- Storage
+- Troubleshooting
+- Workloads & Scheduling
+- Cluster Architecture, Installation & Configuration
+- Services & Networking
+
+Unlike typical cloud certifications with multiple-choice questions, this exam requires you to work directly in a real terminal, executing and operating based on the questions provided. Hands-on familiarity with Kubernetes commands is essential. There will be a total of 12-17 hands-on questions. You are also able to open the official Kubernetes documentation.
+
+## My Background and Preparation Timeline
+
+Before taking the exam, I had around two years of hands-on experience with Kubernetes, but only as a developer, not the administrator / cluster maintainer. Thus I am already familiar with some of the key topics such as Storage and Service Networking. However, I lacked experience in administrative areas such as cluster configuration, troubleshooting, and scheduling. I decided to take the exam to bridge this knowledge gap. To prepare, I dedicated approximately one month to focused study, reviewing materials and practicing exercises.
+
+
+## Study Resources and Materials
+
+My study plan included a mix of the official documentation, Udemy course, and Killersh
+
+1. **Kodekloud's CKA Course**:  The course provided a well-organized curriculum that covered all the essential topics required for the CKA exam. It broke down complex subjects into manageable sections. The course also provides a hands-on labs. These labs offered practical exercises that mirrored real exam scenarios. Given that the exam is entirely practical, gaining as much hands-on experience as possible is essential. Course [link](https://www.udemy.com/course/certified-kubernetes-administrator-with-practice-tests)
+
+2. **Official Kubernetes Documentation**: Since the exam allows you to open the official Kubernetes documentation, I spent time getting familiar with it. This helped me know exactly where to find information during the exam. Some of the most useful documentation pages are the kubectl quick references:
+	- https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands
+	- https://kubernetes.io/docs/reference/kubectl/quick-reference/
+
+
+3. **Killer.sh Exam Simulator**: When you purchase the exam, you receive access to the killer.sh exam simulator. This practice test is significantly more challenging than the actual exam, so mastering it made the real exam feel much easier.
+
+## My Exam Day Experience
+
+I scheduled the exam for 9 AM in the morning. The exam is conducted under remote supervision. Here's what to expect:
+- You'll be asked to show your personal ID, so don't forget to bring it.
+- You'll need to turn on your camera, microphone, and share your screen during the exam.
+- You'll need to close all applications except the exam software.
+- You'll be asked to provide a 360-degree view of your room using your camera, including the area under your desk
+- Your desk must be clear of all items except your laptop.
+
+First, you'll need to download the exam software, which is the PSI Secure Browser. This browser includes its own virtual machine, and you'll conduct the entire exam within it, including accessing the Kubernetes documentation. The Secure Browser can be somewhat laggy, so it's wise to familiarize yourself with it beforehand using the Killer.sh exam simulator.
+
+During the test, I quickly reviewed all the questions and focused on answering the straightforward ones first. After completing those, I tackled the more complex questions. I managed to finish with 30 minutes to spare, which I used to review my answers.
+
+The results were available within 24 hours, and to my surprise, **I passed with a score of 95 out of 100!**
+
+
+## Practical Exam Tips
+
+Based on my experience, here are some tips to help you succeed:
+- Familiarize yourself with the official Kubernetes documentation.
+- Hands-on experience is crucial, during your learning, don't just learn the theory, get your hands dirty. In my case, I mostly used this killercoda [playground](https://killercoda.com/playgrounds/scenario/cka).
+- Practice using the exam environment beforehand to get comfortable with its interface. You will be able to download the practice environment after you schedule for the exam.
+- Use short hand command such as:
+	- `k` instead of `kubectl`
+	-  `cm`,`svc`, `po`, and other resources definition
+- Use imperative command as much as possible if you can. This approach is definitely faster rather than creating a declarative yaml file from scratch. It can also be used to quickly scaffold your yaml file, by using `--dry-run=client -o yaml > file.yaml` command which will output the command as a yaml, you can then modify the configuration from there if needed
+- Each question requires execution in a specific context and namespace. Always double-check these before starting each question.
+- Make an alias to quickly switch between namespaces, I used the following
+```bash
+alias kn='f() { [ "$1" ] && kubectl config set-context --current --namespace $1 || kubectl config view --minify | grep namespace | cut -d" " -f6 ; } ; f'
+```

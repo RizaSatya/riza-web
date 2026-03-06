@@ -1,0 +1,49 @@
+---
+title: "Azure Scale Sets vs GCP Managed Instance Groups"
+date: "2024-08-01"
+excerpt: "Comparing Azure Virtual Machine Scale Sets and GCP Managed Instance Groups for VM auto-scaling and management."
+tags: ["gcp", "azure"]
+draft: false
+---
+
+As an engineer who mainly use Google Cloud Platform (GCP), I've recently started exploring Microsoft Azure to broaden my cloud expertise. This blog post is my learning journal, comparing Azure's features to their GCP counterparts. Today, I'm focusing on how Azure handles VM auto-scaling when compared to GCP.
+
+## The Basics
+At their core, both Azure and GCP VM auto scaling feature serve the same purpose. They allow you to manage a group of VMs as a single entity and automatically scale based on demand. However, the terminology and some implementation details differ. In GCP, the resource is called Managed Instance Group (MIG), while in Azure, it's called Virtual Machine Scale Set (VMSS). To define the VM configuration, GCP uses an Instance Template whereas Azure uses VM Scale Set models for the same purpose.
+
+## Availability Zones
+
+Both cloud platform supports distributing VMs across multiple zones for high availability. In Azure, you can create a zone-redundant Scale Set that spreads instances across three Availability Zones in a region. This is similar to GCP's regional MIGs, providing protection against zone failures.
+
+## Instance Types
+
+One area where I was surprised was Azure's ability to mix different VM types within a single Scale Set. In GCP, all instances in a MIG must be the same type. Azure's approach allows for more granular scaling and potentially better resource utilization. For example, I could have a mix of compute-optimized and memory-optimized VMs in the same Scale Set to handle different types of workloads. This can be achieved by selecting the `Flexible Orchestration Mode` when creating the Scale Set.
+
+## Scaling Policies
+
+One other feature that really stood out to me was Azure's flexibility in scaling policies. While GCP's MIGs offer straightforward CPU utilization and Cloud Monitoring metric-based scaling, Azure Scale Sets offer a wider range of out-of-the-box options:
+- CPU, memory, disk, and network metric-based scaling
+- Custom metrics from Azure Monitor
+
+In Azure, you can create complex scaling rules that combine multiple metrics and conditions. Example:
+- If (CPU > 70% OR Memory > 80%) AND (Http Queue Length > 100) for 10 minutes,
+- Then Increase the instances count
+
+In contrast, GCP's auto scaling policies for MIGs are typically simpler. They usually focus on a single metric at a time. A typical GCP scaling rule might look like this:
+- If average CPU utilization > 70% for 60 seconds,
+- Then increase the instances count
+
+Although, both platforms allow you to set up schedule-based scaling. For example:
+- On weekdays between 9 AM and 5 PM: Increase the count to 10 instances
+- On weekends: Decrease the instances count
+
+## Rolling Update
+
+When it comes to rolling updates (deployments), Azure VMSS and GCP MIGs mostly share some core similarities in their approach. Both platforms aim to minimize downtime and maintain service availability during deployments. They achieve this by gradually updating instances, rather than taking down the entire group at once. Some other similarities:
+- Both allow you to control the pace of updates by specifying how many instances can be updated simultaneously.
+- Both perform health checks on new instances before proceeding with updates.
+- Both support rollback mechanisms if issues are detected during the update process.
+
+
+## Final Thoughts
+Azure provides a more flexible and granular VM auto scaling configuration than what I'm used to in GCP. Azure lets you set up more varied scaling rules and even mix different VM sizes in one group, which might be useful in certain scenarios.

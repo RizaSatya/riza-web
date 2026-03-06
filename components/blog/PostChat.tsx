@@ -126,11 +126,11 @@ export function PostChat({
 
           {/* Messages */}
           {messages.length > 0 && (
-            <div ref={messagesEndRef} className="mt-3 max-h-64 space-y-3 overflow-y-auto">
+            <div ref={messagesEndRef} className="mt-3 space-y-4 overflow-y-auto" style={{ maxHeight: "600px" }}>
               {messages.map((m) => (
                 <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                   {m.role === "assistant" ? (
-                    <div className="max-w-[90%] rounded-lg border border-accent/15 bg-accent/5 px-3 py-2">
+                    <div className="max-w-[90%] rounded-lg border border-accent/15 bg-accent/5 px-3 py-3">
                       <p className="whitespace-pre-wrap text-xs leading-relaxed text-foreground/90">
                         {renderMarkdown(m.content)}
                         {isLoading && m.content === "" && (
@@ -139,7 +139,7 @@ export function PostChat({
                       </p>
                     </div>
                   ) : (
-                    <div className="max-w-[90%] rounded-lg border border-border bg-card px-3 py-2">
+                    <div className="max-w-[90%] rounded-lg border border-border bg-card px-3 py-3">
                       <p className="text-xs leading-relaxed">{m.content}</p>
                     </div>
                   )}

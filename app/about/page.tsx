@@ -10,21 +10,62 @@ export const metadata: Metadata = {
 
 const experience = [
   {
-    title: "Backend Development",
-    description: "Building APIs and microservices in Go, Python, and Node.js",
+    period: "March 2022 – 2024",
+    title: "Senior Software Engineer (Backend, DevOps)",
+    company: "GoTo",
+    bullets: [
+      "Maintain test coverage to at least 90%, enhancing product reliability and stability.",
+      "PIC for Cloud modernization project in internal developer portal side — GCP project onboarding, application base infrastructure onboarding through developer portal.",
+      "PIC for datastore provisioning through internal developer portal. Automate Patroni cluster & Redis resource creation in GCP.",
+      "Google Groups for IAM role binding.",
+    ],
+    stack: "Ruby on Rails, GitOps, Gitlab CI/CD, Chef, Terraform/Terragrunt, Atlantis, GCP",
   },
   {
-    title: "Cloud Infrastructure",
-    description: "AWS, GCP — designing for reliability and cost efficiency",
+    period: "March 2020 – March 2022",
+    title: "Mid Software Engineer (Backend)",
+    company: "GoTo",
+    bullets: [
+      "PIC for improving the team's critical backend services monitoring (serving ~20,000 req/sec). Instrumented using Prometheus + Grafana Agent for metrics scraping and Grafana for dashboard creation and alerting to comply with SLO/SLA.",
+      "Setup infrastructure components from scratch for a new service — Application VMs, HAProxy Load Balancer, Redis, Kafka Producer + Consumer, and monitoring with New Relic & Prometheus + Grafana.",
+      "Created ADR (Architecture Decision Record) docs containing proposed system designs, technical analysis, and deployment/rollout strategies.",
+      "PIC for migrating & rolling out legacy in-house config management service (used by all microservices) to a new service with 0 downtime. Includes RFC documents for DB schema, migration approaches, and task breakdown.",
+    ],
+    stack: "Golang, Kafka, Redis, Prometheus, Grafana",
   },
   {
-    title: "DevOps & Platform Engineering",
-    description: "Kubernetes, Docker, Terraform, CI/CD pipelines",
+    period: "March 2020",
+    title: "DevOps Internal Bootcamp",
+    company: "GoTo",
+    bullets: [
+      "Completed a 2-week internal DevOps bootcamp.",
+      "Created end-to-end CI/CD pipeline from scratch using GitLab pipelines (test, build, deploy) for VM-based deployments using Vagrant, Ansible, HAProxy, and PostgreSQL.",
+      "Created end-to-end CI/CD pipeline for containerized deployments in a local Kubernetes cluster (Minikube) — Docker for image artifact, Helm chart for Kubernetes manifests (deployment, job, configMap, secret, service).",
+    ],
+    stack: "Gitlab Pipeline, Vagrant, Ansible, Docker, Kubernetes, Helm",
   },
   {
-    title: "Observability",
-    description:
-      "Monitoring, logging, and tracing with Prometheus, Grafana, and OpenTelemetry",
+    period: "Aug 2019 – March 2020",
+    title: "Junior Software Engineer (Frontend, Backend)",
+    company: "GoTo",
+    bullets: [
+      "Led the front-end development of the company's profile page.",
+      "Conducted research and proof of concept for the latest frontend frameworks, selecting GatsbyJS for its performance & SEO benefits. Successfully advocated for adoption among stakeholders.",
+      "Contributed to different backend microservices using Ruby on Rails.",
+      "Collaborated with Product Managers on effort estimation, task breakdown, and project planning for PRDs.",
+    ],
+    stack: "Javascript, CSS, React, Redux",
+  },
+  {
+    period: "Aug 2018 – Aug 2019",
+    title: "Software Engineer Intern (Frontend, Backend)",
+    company: "GoTo",
+    bullets: [
+      "Led the front-end development of an internal portal for a new project with supervision from a senior engineer.",
+      "Collaborated with product managers, designers, backend engineers, and QA teams to ensure successful delivery and integration.",
+      "Contributed to Backend for Frontend (BFF) service using Ruby on Rails.",
+    ],
+    stack: "Javascript, CSS, React, Redux",
   },
 ];
 
@@ -145,14 +186,23 @@ export default function AboutPage() {
             <div key={i} className="group flex gap-4 rounded-lg p-4 transition-colors hover:bg-card/50">
               {/* Timeline dot */}
               <div className="mt-2 flex flex-col items-center">
-                <div className="h-2 w-2 rounded-full bg-accent/40 transition-colors group-hover:bg-accent group-hover:shadow-[0_0_8px_var(--accent)]" />
+                <div className="h-2 w-2 shrink-0 rounded-full bg-accent/40 transition-colors group-hover:bg-accent group-hover:shadow-[0_0_8px_var(--accent)]" />
                 {i < experience.length - 1 && (
                   <div className="mt-1 h-full w-px bg-border" />
                 )}
               </div>
-              <div>
-                <h3 className="font-medium">{item.title}</h3>
-                <p className="mt-1 text-sm text-muted">{item.description}</p>
+              <div className="min-w-0 flex-1">
+                <p className="font-mono text-xs text-muted">{item.period}</p>
+                <h3 className="mt-0.5 font-medium">{item.title}</h3>
+                <p className="font-mono text-xs text-accent/70">{item.company}</p>
+                <ul className="mt-2 space-y-1">
+                  {item.bullets.map((b, j) => (
+                    <li key={j} className="text-sm text-muted leading-relaxed">
+                      <span className="mr-2 text-accent/50">–</span>{b}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2 font-mono text-xs text-muted/60">{item.stack}</p>
               </div>
             </div>
           ))}
