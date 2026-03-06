@@ -4,18 +4,6 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #fafafa;
-  --foreground: #09090b;
-  --accent: #059669;
-  --accent-dim: #d1fae5;
-  --muted: #71717a;
-  --code-bg: #f4f4f5;
-  --border: #e4e4e7;
-  --card: #ffffff;
-  --glow: rgba(5, 150, 105, 0.1);
-}
-
-.dark {
   --background: #09090b;
   --foreground: #fafafa;
   --accent: #34d399;

@@ -4,15 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
 import clsx from "clsx";
 
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/blog", label: "Blog" },
-  { href: "/tags", label: "Tags" },
   { href: "/about", label: "About" },
   { href: "/chat", label: "Chat" },
+  { href: "/blog", label: "Blog" },
+  { href: "/tags", label: "Tags" },
 ];
 
 export function Header() {
@@ -59,14 +58,10 @@ export function Header() {
               </Link>
             );
           })}
-          <div className="ml-2 border-l border-border pl-2">
-            <ThemeToggle />
-          </div>
         </div>
 
         {/* Mobile right side */}
         <div className="flex items-center gap-2 md:hidden">
-          <ThemeToggle />
           <button
             onClick={() => setMobileOpen((v) => !v)}
             className="flex h-9 w-9 items-center justify-center rounded-lg text-muted transition-colors hover:text-foreground"
