@@ -40,7 +40,7 @@ export function ChatTeaser() {
               </div>
               <div className="rounded-xl border border-accent/15 bg-accent/5 px-4 py-3">
                 <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
-                  I&apos;ve been HEE running production Kubernetes clusters on AWS and GCP for several years — multi-tenant EKS setups, custom controllers in Go, and GitOps via ArgoCD. I&apos;ve also written a deep-dive on Kubernetes networking if you want the details.
+                  I&apos;ve been running production Kubernetes clusters on AWS and GCP for several years — multi-tenant EKS setups, custom controllers in Go, and GitOps via ArgoCD. I&apos;ve also written a deep-dive on Kubernetes networking if you want the details.
                 </p>
               </div>
             </div>
