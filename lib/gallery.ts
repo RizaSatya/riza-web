@@ -6,6 +6,15 @@ export type GalleryImage = {
   alt: string;
 };
 
+export type GalleryTrip = {
+  slug: string;
+  title: string;
+  coverImage: GalleryImage;
+  images: GalleryImage[];
+  imageCount: number;
+  isFeatured: boolean;
+};
+
 export type GallerySection = {
   slug: string;
   title: string;
@@ -14,6 +23,7 @@ export type GallerySection = {
 
 const DEFAULT_GALLERY_ROOT = path.join(process.cwd(), "public/images/gallery");
 const SUPPORTED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp"]);
+const FEATURED_MARKER = ".featured";
 
 export function isSupportedGalleryImage(filename: string) {
   return SUPPORTED_EXTENSIONS.has(path.extname(filename).toLowerCase());
@@ -27,7 +37,14 @@ export function formatGalleryTitle(slug: string) {
     .join(" ");
 }
 
-export function getGallerySections(rootDir = DEFAULT_GALLERY_ROOT): GallerySection[] {
+type GalleryTripCandidate = {
+  slug: string;
+  title: string;
+  images: GalleryImage[];
+  hasFeaturedMarker: boolean;
+};
+
+function getGalleryTripCandidates(rootDir: string): GalleryTripCandidate[] {
   if (!fs.existsSync(rootDir)) return [];
 
   return fs
@@ -45,6 +62,7 @@ export function getGallerySections(rootDir = DEFAULT_GALLERY_ROOT): GallerySecti
       }
 
       const title = formatGalleryTitle(directory.name);
+      const hasFeaturedMarker = entries.includes(FEATURED_MARKER);
       const images = entries
         .filter(isSupportedGalleryImage)
         .sort((a, b) => a.localeCompare(b))
@@ -60,7 +78,42 @@ export function getGallerySections(rootDir = DEFAULT_GALLERY_ROOT): GallerySecti
           slug: directory.name,
           title,
           images,
+          hasFeaturedMarker,
         },
       ];
     });
+}
+
+export function getGalleryTrips(rootDir = DEFAULT_GALLERY_ROOT): GalleryTrip[] {
+  const candidates = getGalleryTripCandidates(rootDir);
+  const featuredSlug =
+    candidates.find((candidate) => candidate.hasFeaturedMarker)?.slug ?? candidates[0]?.slug;
+
+  return candidates.map((candidate) => ({
+    slug: candidate.slug,
+    title: candidate.title,
+    coverImage: candidate.images[0],
+    images: candidate.images,
+    imageCount: candidate.images.length,
+    isFeatured: candidate.slug === featuredSlug,
+  }));
+}
+
+export function getGalleryTripBySlug(
+  slug: string,
+  rootDir = DEFAULT_GALLERY_ROOT
+): GalleryTrip | null {
+  return getGalleryTrips(rootDir).find((trip) => trip.slug === slug) ?? null;
+}
+
+export function getFeaturedGalleryTrip(trips: GalleryTrip[]) {
+  return trips.find((trip) => trip.isFeatured) ?? trips[0] ?? null;
+}
+
+export function getGallerySections(rootDir = DEFAULT_GALLERY_ROOT): GallerySection[] {
+  return getGalleryTrips(rootDir).map((trip) => ({
+    slug: trip.slug,
+    title: trip.title,
+    images: trip.images,
+  }));
 }
