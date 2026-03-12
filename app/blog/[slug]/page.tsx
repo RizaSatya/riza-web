@@ -11,6 +11,7 @@ import { PostHeader } from "@/components/blog/PostHeader";
 import { TableOfContents } from "@/components/blog/TableOfContents";
 import { PostChat } from "@/components/blog/PostChat";
 import { mdxComponents } from "@/components/mdx/MDXComponents";
+import { absoluteUrl, siteConfig } from "@/lib/site";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -28,16 +29,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: post.frontMatter.title,
     description: post.frontMatter.excerpt,
-    authors: [{ name: "Riza Satyabudhi" }],
+    authors: [{ name: siteConfig.name, url: siteConfig.url }],
+    alternates: {
+      canonical: `/blog/${slug}`,
+    },
     openGraph: {
       title: post.frontMatter.title,
       description: post.frontMatter.excerpt,
       type: "article",
+      url: absoluteUrl(`/blog/${slug}`),
       publishedTime: post.frontMatter.date,
       tags: post.frontMatter.tags,
       images: [
         {
-          url: `/og?title=${encodeURIComponent(post.frontMatter.title)}&tags=${post.frontMatter.tags.join(",")}`,
+          url: absoluteUrl(
+            `/og?title=${encodeURIComponent(post.frontMatter.title)}&tags=${post.frontMatter.tags.join(",")}`
+          ),
           width: 1200,
           height: 630,
         },
@@ -47,6 +54,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: "summary_large_image",
       title: post.frontMatter.title,
       description: post.frontMatter.excerpt,
+      images: [
+        absoluteUrl(
+          `/og?title=${encodeURIComponent(post.frontMatter.title)}&tags=${post.frontMatter.tags.join(",")}`
+        ),
+      ],
     },
   };
 }
@@ -113,9 +125,11 @@ export default async function PostPage({ params }: PageProps) {
             description: post.frontMatter.excerpt,
             author: {
               "@type": "Person",
-              name: "Riza Satyabudhi",
+              name: siteConfig.name,
+              url: siteConfig.url,
             },
             keywords: post.frontMatter.tags,
+            mainEntityOfPage: absoluteUrl(`/blog/${slug}`),
           }),
         }}
       />

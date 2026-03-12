@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/posts";
 import { PostCard } from "@/components/blog/PostCard";
 import { ChatTeaser } from "@/components/chat/ChatTeaser";
-import { Github, Linkedin, Mail } from "lucide-react";
 import Link from "next/link";
+import { SocialLinks } from "@/components/layout/SocialLinks";
+import { getPersonSchema, getWebsiteSchema, siteConfig } from "@/lib/site";
 
 const skills = [
   "Kubernetes",
@@ -18,6 +20,21 @@ const skills = [
   "GitHub Actions",
   "ArgoCD",
 ];
+
+export const metadata: Metadata = {
+  title: {
+    absolute: siteConfig.title,
+  },
+  description: siteConfig.description,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: siteConfig.title,
+    description: siteConfig.description,
+    url: siteConfig.url,
+  },
+};
 
 export default function Home() {
   const posts = getAllPosts().slice(0, 3);
@@ -53,31 +70,10 @@ export default function Home() {
           className="animate-in relative mt-8 flex items-center gap-3"
           style={{ "--stagger": 4 } as React.CSSProperties}
         >
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full p-2.5 text-muted transition-all duration-300 hover:text-accent hover:shadow-[0_0_20px_-4px_var(--glow)]"
-            aria-label="GitHub"
-          >
-            <Github className="h-5 w-5" />
-          </a>
-          <a
-            href="https://linkedin.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full p-2.5 text-muted transition-all duration-300 hover:text-accent hover:shadow-[0_0_20px_-4px_var(--glow)]"
-            aria-label="LinkedIn"
-          >
-            <Linkedin className="h-5 w-5" />
-          </a>
-          <a
-            href="mailto:hello@riza.dev"
-            className="rounded-full p-2.5 text-muted transition-all duration-300 hover:text-accent hover:shadow-[0_0_20px_-4px_var(--glow)]"
-            aria-label="Email"
-          >
-            <Mail className="h-5 w-5" />
-          </a>
+          <SocialLinks
+            iconClassName="h-5 w-5"
+            linkClassName="rounded-full p-2.5 text-muted transition-all duration-300 hover:text-accent hover:shadow-[0_0_20px_-4px_var(--glow)]"
+          />
         </div>
       </section>
 
@@ -126,6 +122,14 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([getWebsiteSchema(), getPersonSchema()]),
+        }}
+      />
     </div>
   );
 }

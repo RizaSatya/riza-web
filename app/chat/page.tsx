@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
 import { ChatInterface } from "@/components/chat/ChatInterface";
+import { absoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Chat",
   description:
     "Ask an AI anything about Riza — his experience, skills, background, and blog posts. Powered by Google Gemini.",
+  alternates: {
+    canonical: "/chat",
+  },
+  openGraph: {
+    title: "Chat",
+    description:
+      "Ask an AI anything about Riza — his experience, skills, background, and blog posts. Powered by Google Gemini.",
+    url: absoluteUrl("/chat"),
+  },
 };
 
 export default function ChatPage() {

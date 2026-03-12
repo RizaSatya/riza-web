@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllTags } from "@/lib/tags";
+import { absoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Tags",
   description: "Browse posts by tag.",
+  alternates: {
+    canonical: "/tags",
+  },
+  openGraph: {
+    title: "Tags",
+    description: "Browse posts by tag.",
+    url: absoluteUrl("/tags"),
+  },
 };
 
 export default function TagsPage() {

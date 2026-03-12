@@ -43,5 +43,5 @@ Senior Software Engineer specializing in Platform Engineering and Backend system
 
 ## Contact
 
-* **Website:** riza-dev.vercel.app
+* **Website:** https://riza.dev
 * **Location:** South Jakarta, Indonesia (GMT+7)

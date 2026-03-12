@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getAllTags, getPostsByTag } from "@/lib/tags";
 import { PostCard } from "@/components/blog/PostCard";
+import { absoluteUrl } from "@/lib/site";
 
 interface PageProps {
   params: Promise<{ tag: string }>;
@@ -17,6 +18,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `Posts tagged "${tag}"`,
     description: `All posts tagged with ${tag}.`,
+    alternates: {
+      canonical: `/tags/${tag}`,
+    },
+    openGraph: {
+      title: `Posts tagged "${tag}"`,
+      description: `All posts tagged with ${tag}.`,
+      url: absoluteUrl(`/tags/${tag}`),
+    },
   };
 }
 

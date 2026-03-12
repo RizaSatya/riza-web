@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Mail } from "lucide-react";
 import Image from "next/image";
+import { getPersonSchema, getProfilePageSchema, siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
-  description:
-    "Senior Software Engineer specializing in DevOps and backend systems.",
+  description: siteConfig.description,
+  alternates: {
+    canonical: "/about",
+  },
+  openGraph: {
+    title: `About ${siteConfig.name}`,
+    description: siteConfig.description,
+    url: `${siteConfig.url}/about`,
+  },
 };
 
 const experience = [
@@ -225,7 +233,7 @@ export default function AboutPage() {
 
         <div className="mt-6 flex flex-wrap gap-3">
           <a
-            href="https://github.com"
+            href={siteConfig.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 rounded-lg bg-card/50 px-4 py-3 text-sm text-muted transition-all duration-300 hover:text-accent hover:shadow-[0_0_20px_-4px_var(--glow)]"
@@ -234,16 +242,7 @@ export default function AboutPage() {
             GitHub
           </a>
           <a
-            href="https://linkedin.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-lg bg-card/50 px-4 py-3 text-sm text-muted transition-all duration-300 hover:text-accent hover:shadow-[0_0_20px_-4px_var(--glow)]"
-          >
-            <Linkedin className="h-4 w-4" />
-            LinkedIn
-          </a>
-          <a
-            href="mailto:hello@riza.dev"
+            href={`mailto:${siteConfig.email}`}
             className="flex items-center gap-2 rounded-lg bg-card/50 px-4 py-3 text-sm text-muted transition-all duration-300 hover:text-accent hover:shadow-[0_0_20px_-4px_var(--glow)]"
           >
             <Mail className="h-4 w-4" />
@@ -251,6 +250,14 @@ export default function AboutPage() {
           </a>
         </div>
       </div>
+
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([getProfilePageSchema(), getPersonSchema()]),
+        }}
+      />
     </div>
   );
 }

@@ -1,11 +1,21 @@
 import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/posts";
 import { PostCard } from "@/components/blog/PostCard";
+import { absoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Blog",
   description:
     "Thoughts on DevOps, backend engineering, and cloud infrastructure.",
+  alternates: {
+    canonical: "/blog",
+  },
+  openGraph: {
+    title: "Blog",
+    description:
+      "Thoughts on DevOps, backend engineering, and cloud infrastructure.",
+    url: absoluteUrl("/blog"),
+  },
 };
 
 export default function BlogPage() {
