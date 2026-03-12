@@ -2,140 +2,93 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
-import type { GallerySection } from "@/lib/gallery";
+import Link from "next/link";
+import type { GalleryTrip } from "@/lib/gallery";
 
 type GalleryViewProps = {
-  sections: GallerySection[];
+  trip: GalleryTrip;
 };
 
-type ActiveImage = {
-  sectionIndex: number;
-  imageIndex: number;
-};
+export function GalleryView({ trip }: GalleryViewProps) {
+  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
-export function GalleryView({ sections }: GalleryViewProps) {
-  const [activeImage, setActiveImage] = useState<ActiveImage | null>(null);
-
-  const activeSection =
-    activeImage === null ? null : sections[activeImage.sectionIndex];
-  const activePhoto =
-    activeImage === null || activeSection === null
-      ? null
-      : activeSection.images[activeImage.imageIndex];
+  const activePhoto = activeImageIndex === null ? null : trip.images[activeImageIndex];
 
   useEffect(() => {
-    if (activeImage === null) return;
+    if (activeImageIndex === null) return;
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setActiveImage(null);
+        setActiveImageIndex(null);
       }
 
       if (event.key === "ArrowRight") {
-        setActiveImage((current) => {
-          if (current === null) return null;
-          const section = sections[current.sectionIndex];
-          return {
-            ...current,
-            imageIndex: (current.imageIndex + 1) % section.images.length,
-          };
-        });
+        setActiveImageIndex((current) =>
+          current === null ? null : (current + 1) % trip.images.length
+        );
       }
 
       if (event.key === "ArrowLeft") {
-        setActiveImage((current) => {
-          if (current === null) return null;
-          const section = sections[current.sectionIndex];
-          return {
-            ...current,
-            imageIndex:
-              (current.imageIndex - 1 + section.images.length) % section.images.length,
-          };
-        });
+        setActiveImageIndex((current) =>
+          current === null ? null : (current - 1 + trip.images.length) % trip.images.length
+        );
       }
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeImage, sections]);
+  }, [activeImageIndex, trip.images.length]);
 
   function moveActiveImage(direction: 1 | -1) {
-    setActiveImage((current) => {
+    setActiveImageIndex((current) => {
       if (current === null) return null;
-      const section = sections[current.sectionIndex];
 
-      return {
-        ...current,
-        imageIndex:
-          (current.imageIndex + direction + section.images.length) % section.images.length,
-      };
+      return (current + direction + trip.images.length) % trip.images.length;
     });
   }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-20">
       <div className="animate-in" style={{ "--stagger": 0 } as CSSProperties}>
-        <p className="font-mono text-sm text-accent">gallery</p>
+        <Link
+          href="/gallery"
+          className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.3em] text-muted transition-colors hover:text-accent"
+        >
+          Back to gallery
+        </Link>
+        <p className="mt-6 font-mono text-sm text-accent">gallery</p>
         <h1 className="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">
-          Travel Photography
+          {trip.title}
         </h1>
         <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
-          Fragments from roads, cities, coastlines, and quiet mornings.
+          {trip.imageCount} {trip.imageCount === 1 ? "photo" : "photos"}
         </p>
       </div>
 
-      {sections.length === 0 ? (
-        <div className="mt-12 rounded-3xl border border-border bg-card/40 p-8 sm:p-10">
-          <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
-            No journeys yet
-          </p>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted">
-            Travel frames will appear here once images are added to `public/images/gallery`.
-          </p>
-        </div>
-      ) : (
-        <div className="mt-14 space-y-16 sm:space-y-24">
-          {sections.map((section, sectionIndex) => (
-            <section
-              key={section.slug}
-              className="animate-in space-y-6"
-              style={{ "--stagger": sectionIndex + 1 } as CSSProperties}
-            >
-              <div className="flex items-center gap-4">
-                <h2 className="font-mono text-xs uppercase tracking-widest text-muted">
-                  {section.title}
-                </h2>
-                <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
-              </div>
+      <div className="mt-14 animate-in columns-1 gap-4 sm:columns-2 xl:columns-3">
+        {trip.images.map((image, imageIndex) => (
+          <button
+            key={image.src}
+            type="button"
+            aria-label={`Open ${image.alt}`}
+            onClick={() => setActiveImageIndex(imageIndex)}
+            className="group mb-4 block w-full break-inside-avoid overflow-hidden rounded-[1.5rem] bg-card/40 text-left outline-none transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_-8px_var(--glow)] focus-visible:ring-2 focus-visible:ring-accent/60"
+          >
+            <Image
+              src={image.src}
+              alt={image.alt}
+              width={1200}
+              height={1600}
+              className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            />
+          </button>
+        ))}
+      </div>
 
-              <div className="columns-1 gap-4 sm:columns-2 xl:columns-3">
-                {section.images.map((image, imageIndex) => (
-                  <button
-                    key={image.src}
-                    type="button"
-                    aria-label={`Open ${image.alt}`}
-                    onClick={() => setActiveImage({ sectionIndex, imageIndex })}
-                    className="group mb-4 block w-full break-inside-avoid overflow-hidden rounded-[1.5rem] bg-card/40 text-left outline-none transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_-8px_var(--glow)] focus-visible:ring-2 focus-visible:ring-accent/60"
-                  >
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      width={1200}
-                      height={1600}
-                      className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                    />
-                  </button>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
-
-      {activeImage !== null && activePhoto !== null && activeSection !== null ? (
+      {activeImageIndex !== null && activePhoto !== null ? (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-background/92 p-4 backdrop-blur-md sm:p-6"
-          onClick={() => setActiveImage(null)}
+          onClick={() => setActiveImageIndex(null)}
         >
           <div
             role="dialog"
@@ -147,17 +100,17 @@ export function GalleryView({ sections }: GalleryViewProps) {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">
-                  {activeSection.title}
+                  {trip.title}
                 </p>
                 <p className="mt-2 text-sm text-muted">
-                  {activeImage.imageIndex + 1} / {activeSection.images.length}
+                  {activeImageIndex + 1} / {trip.images.length}
                 </p>
               </div>
 
               <button
                 type="button"
                 aria-label="Close viewer"
-                onClick={() => setActiveImage(null)}
+                onClick={() => setActiveImageIndex(null)}
                 className="rounded-full border border-white/10 px-4 py-2 text-sm text-muted transition-colors hover:text-foreground"
               >
                 Close
