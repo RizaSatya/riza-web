@@ -8,6 +8,9 @@ const trip: GalleryTrip = {
   title: "Rome Italy Winter 2024",
   imageCount: 3,
   isFeatured: true,
+  date: "12-2024",
+  displayDate: "December 2024",
+  order: 3,
   coverImage: {
     src: "/images/gallery/rome-italy-winter-2024/01.jpg",
     alt: "Rome Italy Winter 2024 photo 1",
@@ -28,7 +31,7 @@ describe("GalleryView", () => {
       "href",
       "/gallery"
     );
-    expect(screen.getByText("3 photos")).toBeInTheDocument();
+    expect(screen.getByText("December 2024")).toBeInTheDocument();
     expect(screen.getAllByRole("img")).toHaveLength(3);
     expect(screen.getByAltText("Rome Italy Winter 2024 photo 1")).toBeInTheDocument();
   });

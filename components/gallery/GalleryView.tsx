@@ -60,9 +60,11 @@ export function GalleryView({ trip }: GalleryViewProps) {
         <h1 className="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl">
           {trip.title}
         </h1>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
-          {trip.imageCount} {trip.imageCount === 1 ? "photo" : "photos"}
-        </p>
+        {trip.displayDate ? (
+          <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
+            {trip.displayDate}
+          </p>
+        ) : null}
       </div>
 
       <div className="mt-14 animate-in columns-1 gap-4 sm:columns-2 xl:columns-3">
