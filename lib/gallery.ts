@@ -37,6 +37,16 @@ export function formatGalleryTitle(slug: string) {
     .join(" ");
 }
 
+export function createGallerySlug(name: string) {
+  return name
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-");
+}
+
 type GalleryTripCandidate = {
   slug: string;
   title: string;
@@ -46,6 +56,8 @@ type GalleryTripCandidate = {
 
 function getGalleryTripCandidates(rootDir: string): GalleryTripCandidate[] {
   if (!fs.existsSync(rootDir)) return [];
+
+  const seenSlugs = new Set<string>();
 
   return fs
     .readdirSync(rootDir, { withFileTypes: true })
@@ -61,6 +73,9 @@ function getGalleryTripCandidates(rootDir: string): GalleryTripCandidate[] {
         return [];
       }
 
+      const slug = createGallerySlug(directory.name);
+      if (!slug || seenSlugs.has(slug)) return [];
+
       const title = formatGalleryTitle(directory.name);
       const hasFeaturedMarker = entries.includes(FEATURED_MARKER);
       const images = entries
@@ -72,10 +87,11 @@ function getGalleryTripCandidates(rootDir: string): GalleryTripCandidate[] {
         }));
 
       if (images.length === 0) return [];
+      seenSlugs.add(slug);
 
       return [
         {
-          slug: directory.name,
+          slug,
           title,
           images,
           hasFeaturedMarker,

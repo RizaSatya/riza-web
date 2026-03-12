@@ -3,6 +3,7 @@ import os from "os";
 import path from "path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
+  createGallerySlug,
   formatGalleryTitle,
   getGalleryTripBySlug,
   getGalleryTrips,
@@ -46,6 +47,15 @@ describe("formatGalleryTitle", () => {
   it("formats hyphenated and underscored folder names", () => {
     expect(formatGalleryTitle("japan-autumn-2025")).toBe("Japan Autumn 2025");
     expect(formatGalleryTitle("bali_sunrise")).toBe("Bali Sunrise");
+  });
+});
+
+describe("createGallerySlug", () => {
+  it("normalizes punctuation-heavy folder names into URL-safe slugs", () => {
+    expect(createGallerySlug("Florence, Italy (Winter 2024)")).toBe(
+      "florence-italy-winter-2024"
+    );
+    expect(createGallerySlug("Bali_Sunrise")).toBe("bali-sunrise");
   });
 });
 
@@ -156,31 +166,70 @@ describe("getGalleryTrips", () => {
       },
     ]);
   });
+
+  it("uses normalized slugs for folders with punctuation in their names", () => {
+    const root = makeTempGallery();
+
+    writeFile(path.join(root, "Florence, Italy (Winter 2024)", "01.jpg"));
+    writeFile(path.join(root, "Rome, Italy (Winter 2024)", "01.jpg"));
+
+    expect(getGalleryTrips(root).map((trip) => trip.slug)).toEqual([
+      "florence-italy-winter-2024",
+      "rome-italy-winter-2024",
+    ]);
+  });
+
+  it("skips later folders when slug normalization would collide", () => {
+    const root = makeTempGallery();
+
+    writeFile(path.join(root, "Bali Sunrise", "01.jpg"));
+    writeFile(path.join(root, "bali-sunrise", "01.jpg"));
+
+    expect(getGalleryTrips(root)).toEqual([
+      {
+        slug: "bali-sunrise",
+        title: "Bali Sunrise",
+        coverImage: {
+          alt: "Bali Sunrise photo 1",
+          src: "/images/gallery/Bali Sunrise/01.jpg",
+        },
+        imageCount: 1,
+        isFeatured: true,
+        images: [
+          {
+            alt: "Bali Sunrise photo 1",
+            src: "/images/gallery/Bali Sunrise/01.jpg",
+          },
+        ],
+      },
+    ]);
+  });
 });
 
 describe("getGalleryTripBySlug", () => {
   it("returns the matching trip and null for unknown slugs", () => {
     const root = makeTempGallery();
 
-    writeFile(path.join(root, "rome-italy-winter-2024", ".featured"));
-    writeFile(path.join(root, "rome-italy-winter-2024", "01.jpg"));
+    writeFile(path.join(root, "Rome, Italy (Winter 2024)", ".featured"));
+    writeFile(path.join(root, "Rome, Italy (Winter 2024)", "01.jpg"));
 
     expect(getGalleryTripBySlug("rome-italy-winter-2024", root)).toEqual({
       slug: "rome-italy-winter-2024",
-      title: "Rome Italy Winter 2024",
+      title: "Rome, Italy (Winter 2024)",
       coverImage: {
-        alt: "Rome Italy Winter 2024 photo 1",
-        src: "/images/gallery/rome-italy-winter-2024/01.jpg",
+        alt: "Rome, Italy (Winter 2024) photo 1",
+        src: "/images/gallery/Rome, Italy (Winter 2024)/01.jpg",
       },
       imageCount: 1,
       isFeatured: true,
       images: [
         {
-          alt: "Rome Italy Winter 2024 photo 1",
-          src: "/images/gallery/rome-italy-winter-2024/01.jpg",
+          alt: "Rome, Italy (Winter 2024) photo 1",
+          src: "/images/gallery/Rome, Italy (Winter 2024)/01.jpg",
         },
       ],
     });
+    expect(getGalleryTripBySlug("Rome, Italy (Winter 2024)", root)).toBeNull();
     expect(getGalleryTripBySlug("missing-trip", root)).toBeNull();
   });
 });
