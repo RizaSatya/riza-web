@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { GalleryView } from "@/components/gallery/GalleryView";
-import { getGallerySections } from "@/lib/gallery";
+import { GalleryDirectoryView } from "@/components/gallery/GalleryDirectoryView";
+import { getGalleryTrips } from "@/lib/gallery";
 import { siteConfig } from "@/lib/site";
 
-const galleryDescription = "Travel photography from Riza Satyabudhi.";
+const galleryDescription = "A curated directory of travel photography from Riza Satyabudhi.";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default function GalleryPage() {
-  const sections = getGallerySections();
+  const trips = getGalleryTrips();
 
-  return <GalleryView sections={sections} />;
+  return <GalleryDirectoryView trips={trips} />;
 }
