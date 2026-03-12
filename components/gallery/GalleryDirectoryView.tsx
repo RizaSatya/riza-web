@@ -66,10 +66,11 @@ export function GalleryDirectoryView({ trips }: GalleryDirectoryViewProps) {
                     <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
                       {featuredTrip.title}
                     </h2>
-                    <p className="mt-4 text-sm text-muted sm:text-base">
-                      {featuredTrip.imageCount}{" "}
-                      {featuredTrip.imageCount === 1 ? "photo" : "photos"}
-                    </p>
+                    {featuredTrip.displayDate ? (
+                      <p className="mt-4 text-sm text-muted sm:text-base">
+                        {featuredTrip.displayDate}
+                      </p>
+                    ) : null}
                     <p className="mt-4 max-w-md text-sm leading-relaxed text-muted sm:text-base">
                       Start with the featured trip, then dip into the rest of the archive at your
                       own pace.
@@ -90,13 +91,13 @@ export function GalleryDirectoryView({ trips }: GalleryDirectoryViewProps) {
 
           {directoryTrips.length > 0 ? (
             <section
-              aria-label="All journeys"
+              aria-label="All trips"
               className="animate-in"
               style={{ "--stagger": featuredTrip === null ? 1 : 2 } as CSSProperties}
             >
               <div className="flex items-center gap-4">
                 <h2 className="font-mono text-xs uppercase tracking-widest text-muted">
-                  All journeys
+                  All trips
                 </h2>
                 <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
               </div>
@@ -121,9 +122,9 @@ export function GalleryDirectoryView({ trips }: GalleryDirectoryViewProps) {
                       <h3 className="font-display text-2xl font-semibold tracking-tight">
                         {trip.title}
                       </h3>
-                      <p className="mt-3 text-sm text-muted">
-                        {trip.imageCount} {trip.imageCount === 1 ? "photo" : "photos"}
-                      </p>
+                      {trip.displayDate ? (
+                        <p className="mt-3 text-sm text-muted">{trip.displayDate}</p>
+                      ) : null}
                     </div>
                   </Link>
                 ))}

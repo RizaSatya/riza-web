@@ -9,6 +9,9 @@ const trips: GalleryTrip[] = [
     title: "Rome Italy Winter 2024",
     imageCount: 2,
     isFeatured: true,
+    date: "12-2024",
+    displayDate: "December 2024",
+    order: 2,
     coverImage: {
       src: "/images/gallery/rome-italy-winter-2024/01.jpg",
       alt: "Rome Italy Winter 2024 photo 1",
@@ -23,6 +26,9 @@ const trips: GalleryTrip[] = [
     title: "Florence Italy Winter 2024",
     imageCount: 1,
     isFeatured: false,
+    date: "01-2025",
+    displayDate: "January 2025",
+    order: 1,
     coverImage: {
       src: "/images/gallery/florence-italy-winter-2024/01.jpg",
       alt: "Florence Italy Winter 2024 photo 1",
@@ -46,13 +52,13 @@ describe("GalleryDirectoryView", () => {
       "href",
       "/gallery/rome-italy-winter-2024"
     );
-    expect(screen.getByText("2 photos")).toBeInTheDocument();
+    expect(screen.getByText("December 2024")).toBeInTheDocument();
 
-    const directory = screen.getByRole("region", { name: /all journeys/i });
+    const directory = screen.getByRole("region", { name: /all trips/i });
     expect(
       within(directory).getByRole("link", { name: /florence italy winter 2024/i })
     ).toHaveAttribute("href", "/gallery/florence-italy-winter-2024");
-    expect(within(directory).getByText("1 photo")).toBeInTheDocument();
+    expect(within(directory).getByText("January 2025")).toBeInTheDocument();
   });
 
   it("renders all trips in the directory when no featured trip exists", () => {
@@ -67,13 +73,15 @@ describe("GalleryDirectoryView", () => {
 
     expect(screen.queryByText(/featured journey/i)).not.toBeInTheDocument();
 
-    const directory = screen.getByRole("region", { name: /all journeys/i });
+    const directory = screen.getByRole("region", { name: /all trips/i });
     expect(
       within(directory).getByRole("link", { name: /rome italy winter 2024/i })
     ).toHaveAttribute("href", "/gallery/rome-italy-winter-2024");
     expect(
       within(directory).getByRole("link", { name: /florence italy winter 2024/i })
     ).toHaveAttribute("href", "/gallery/florence-italy-winter-2024");
+    expect(within(directory).getByText("December 2024")).toBeInTheDocument();
+    expect(within(directory).getByText("January 2025")).toBeInTheDocument();
   });
 
   it("renders an empty state when there are no trips", () => {

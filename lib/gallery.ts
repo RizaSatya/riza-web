@@ -13,6 +13,9 @@ export type GalleryTrip = {
   images: GalleryImage[];
   imageCount: number;
   isFeatured: boolean;
+  date: string | null;
+  displayDate: string | null;
+  order: number | null;
 };
 
 export type GallerySection = {
@@ -24,6 +27,21 @@ export type GallerySection = {
 const DEFAULT_GALLERY_ROOT = path.join(process.cwd(), "public/images/gallery");
 const SUPPORTED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 const FEATURED_MARKER = ".featured";
+const METADATA_FILENAME = "metadata.json";
+const GALLERY_MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+] as const;
 
 export function isSupportedGalleryImage(filename: string) {
   return SUPPORTED_EXTENSIONS.has(path.extname(filename).toLowerCase());
@@ -47,11 +65,76 @@ export function createGallerySlug(name: string) {
     .replace(/-{2,}/g, "-");
 }
 
+export function formatGalleryDate(value: string) {
+  const match = value.match(/^(0[1-9]|1[0-2])-(\d{4})$/);
+  if (!match) return null;
+
+  const monthIndex = Number(match[1]) - 1;
+  return `${GALLERY_MONTHS[monthIndex]} ${match[2]}`;
+}
+
+type GalleryMetadata = {
+  date: string | null;
+  displayDate: string | null;
+  order: number | null;
+};
+
+function readGalleryMetadata(sectionRoot: string): GalleryMetadata {
+  const metadataPath = path.join(sectionRoot, METADATA_FILENAME);
+  if (!fs.existsSync(metadataPath)) {
+    return {
+      date: null,
+      displayDate: null,
+      order: null,
+    };
+  }
+
+  try {
+    const parsed = JSON.parse(fs.readFileSync(metadataPath, "utf8")) as {
+      date?: unknown;
+      order?: unknown;
+    };
+    const date = typeof parsed.date === "string" ? parsed.date : null;
+    const displayDate = date === null ? null : formatGalleryDate(date);
+    const order = typeof parsed.order === "number" && Number.isFinite(parsed.order)
+      ? parsed.order
+      : null;
+
+    return {
+      date: displayDate === null ? null : date,
+      displayDate,
+      order,
+    };
+  } catch {
+    return {
+      date: null,
+      displayDate: null,
+      order: null,
+    };
+  }
+}
+
+function compareGalleryDates(a: string | null, b: string | null) {
+  if (a === b) return 0;
+  if (a === null) return 1;
+  if (b === null) return -1;
+
+  const [aMonth, aYear] = a.split("-").map(Number);
+  const [bMonth, bYear] = b.split("-").map(Number);
+  const aValue = aYear * 100 + aMonth;
+  const bValue = bYear * 100 + bMonth;
+
+  return bValue - aValue;
+}
+
 type GalleryTripCandidate = {
   slug: string;
   title: string;
   images: GalleryImage[];
   hasFeaturedMarker: boolean;
+  date: string | null;
+  displayDate: string | null;
+  order: number | null;
 };
 
 function getGalleryTripCandidates(rootDir: string): GalleryTripCandidate[] {
@@ -78,6 +161,7 @@ function getGalleryTripCandidates(rootDir: string): GalleryTripCandidate[] {
 
       const title = formatGalleryTitle(directory.name);
       const hasFeaturedMarker = entries.includes(FEATURED_MARKER);
+      const metadata = readGalleryMetadata(sectionRoot);
       const images = entries
         .filter(isSupportedGalleryImage)
         .sort((a, b) => a.localeCompare(b))
@@ -95,13 +179,33 @@ function getGalleryTripCandidates(rootDir: string): GalleryTripCandidate[] {
           title,
           images,
           hasFeaturedMarker,
+          date: metadata.date,
+          displayDate: metadata.displayDate,
+          order: metadata.order,
         },
       ];
     });
 }
 
 export function getGalleryTrips(rootDir = DEFAULT_GALLERY_ROOT): GalleryTrip[] {
-  const candidates = getGalleryTripCandidates(rootDir);
+  const candidates = getGalleryTripCandidates(rootDir).sort((a, b) => {
+    const aHasOrder = a.order !== null;
+    const bHasOrder = b.order !== null;
+
+    if (aHasOrder && bHasOrder) {
+      const orderDifference = a.order! - b.order!;
+      if (orderDifference !== 0) return orderDifference;
+    }
+
+    if (aHasOrder !== bHasOrder) {
+      return aHasOrder ? -1 : 1;
+    }
+
+    const dateComparison = compareGalleryDates(a.date, b.date);
+    if (dateComparison !== 0) return dateComparison;
+
+    return a.title.localeCompare(b.title);
+  });
   const featuredSlug = candidates.find((candidate) => candidate.hasFeaturedMarker)?.slug;
 
   return candidates.map((candidate) => ({
@@ -111,6 +215,9 @@ export function getGalleryTrips(rootDir = DEFAULT_GALLERY_ROOT): GalleryTrip[] {
     images: candidate.images,
     imageCount: candidate.images.length,
     isFeatured: candidate.slug === featuredSlug,
+    date: candidate.date,
+    displayDate: candidate.displayDate,
+    order: candidate.order,
   }));
 }
 

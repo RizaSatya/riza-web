@@ -4,6 +4,7 @@ import path from "path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   createGallerySlug,
+  formatGalleryDate,
   formatGalleryTitle,
   getGalleryTripBySlug,
   getGalleryTrips,
@@ -21,6 +22,11 @@ function makeTempGallery() {
 function writeFile(filePath: string) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, "stub");
+}
+
+function writeJson(filePath: string, value: unknown) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, JSON.stringify(value, null, 2));
 }
 
 afterEach(() => {
@@ -59,12 +65,20 @@ describe("createGallerySlug", () => {
   });
 });
 
+describe("formatGalleryDate", () => {
+  it("formats MM-YYYY strings into Month YYYY labels", () => {
+    expect(formatGalleryDate("12-2024")).toBe("December 2024");
+    expect(formatGalleryDate("02-2025")).toBe("February 2025");
+    expect(formatGalleryDate("2024-12")).toBeNull();
+  });
+});
+
 describe("getGalleryTrips", () => {
   it("returns an empty array when the gallery root is missing", () => {
     expect(getGalleryTrips("/tmp/does-not-exist-gallery")).toEqual([]);
   });
 
-  it("derives cover images, image counts, and featured state from folder contents", () => {
+  it("reads metadata.json and sorts trips by order before date", () => {
     const root = makeTempGallery();
 
     writeFile(path.join(root, "README.md"));
@@ -72,7 +86,15 @@ describe("getGalleryTrips", () => {
     writeFile(path.join(root, "rome-italy-winter-2024", "02.jpg"));
     writeFile(path.join(root, "rome-italy-winter-2024", "01.jpg"));
     writeFile(path.join(root, "rome-italy-winter-2024", "notes.txt"));
+    writeJson(path.join(root, "rome-italy-winter-2024", "metadata.json"), {
+      date: "12-2024",
+      order: 2,
+    });
     writeFile(path.join(root, "florence-italy-winter-2024", "01.jpg"));
+    writeJson(path.join(root, "florence-italy-winter-2024", "metadata.json"), {
+      date: "01-2025",
+      order: 1,
+    });
 
     expect(getGalleryTrips(root)).toEqual([
       {
@@ -84,6 +106,9 @@ describe("getGalleryTrips", () => {
         },
         imageCount: 1,
         isFeatured: false,
+        date: "01-2025",
+        displayDate: "January 2025",
+        order: 1,
         images: [
           {
             alt: "Florence Italy Winter 2024 photo 1",
@@ -100,6 +125,9 @@ describe("getGalleryTrips", () => {
         },
         imageCount: 2,
         isFeatured: true,
+        date: "12-2024",
+        displayDate: "December 2024",
+        order: 2,
         images: [
           {
             alt: "Rome Italy Winter 2024 photo 1",
@@ -157,6 +185,9 @@ describe("getGalleryTrips", () => {
         },
         imageCount: 1,
         isFeatured: false,
+        date: null,
+        displayDate: null,
+        order: null,
         images: [
           {
             alt: "Rome photo 1",
@@ -195,6 +226,9 @@ describe("getGalleryTrips", () => {
         },
         imageCount: 1,
         isFeatured: false,
+        date: null,
+        displayDate: null,
+        order: null,
         images: [
           {
             alt: "Bali Sunrise photo 1",
@@ -222,6 +256,9 @@ describe("getGalleryTripBySlug", () => {
       },
       imageCount: 1,
       isFeatured: true,
+      date: null,
+      displayDate: null,
+      order: null,
       images: [
         {
           alt: "Rome, Italy (Winter 2024) photo 1",
@@ -231,5 +268,28 @@ describe("getGalleryTripBySlug", () => {
     });
     expect(getGalleryTripBySlug("Rome, Italy (Winter 2024)", root)).toBeNull();
     expect(getGalleryTripBySlug("missing-trip", root)).toBeNull();
+  });
+
+  it("sorts unordered trips by metadata date descending, then title", () => {
+    const root = makeTempGallery();
+
+    writeFile(path.join(root, "Cinque Terre, Italy (Winter 2024)", "01.jpg"));
+    writeJson(path.join(root, "Cinque Terre, Italy (Winter 2024)", "metadata.json"), {
+      date: "12-2024",
+    });
+    writeFile(path.join(root, "Florence, Italy (Winter 2024)", "01.jpg"));
+    writeJson(path.join(root, "Florence, Italy (Winter 2024)", "metadata.json"), {
+      date: "12-2024",
+    });
+    writeFile(path.join(root, "Rome, Italy (Winter 2024)", "01.jpg"));
+    writeJson(path.join(root, "Rome, Italy (Winter 2024)", "metadata.json"), {
+      date: "01-2025",
+    });
+
+    expect(getGalleryTrips(root).map((trip) => trip.slug)).toEqual([
+      "rome-italy-winter-2024",
+      "cinque-terre-italy-winter-2024",
+      "florence-italy-winter-2024",
+    ]);
   });
 });
