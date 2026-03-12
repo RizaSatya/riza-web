@@ -55,6 +55,27 @@ describe("GalleryDirectoryView", () => {
     expect(within(directory).getByText("1 photo")).toBeInTheDocument();
   });
 
+  it("renders all trips in the directory when no featured trip exists", () => {
+    render(
+      <GalleryDirectoryView
+        trips={trips.map((trip) => ({
+          ...trip,
+          isFeatured: false,
+        }))}
+      />
+    );
+
+    expect(screen.queryByText(/featured journey/i)).not.toBeInTheDocument();
+
+    const directory = screen.getByRole("region", { name: /all journeys/i });
+    expect(
+      within(directory).getByRole("link", { name: /rome italy winter 2024/i })
+    ).toHaveAttribute("href", "/gallery/rome-italy-winter-2024");
+    expect(
+      within(directory).getByRole("link", { name: /florence italy winter 2024/i })
+    ).toHaveAttribute("href", "/gallery/florence-italy-winter-2024");
+  });
+
   it("renders an empty state when there are no trips", () => {
     render(<GalleryDirectoryView trips={[]} />);
 

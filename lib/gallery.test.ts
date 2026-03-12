@@ -114,7 +114,7 @@ describe("getGalleryTrips", () => {
     ]);
   });
 
-  it("falls back to the first valid folder when no trip is marked as featured", () => {
+  it("does not mark any trip as featured when no marker file exists", () => {
     const root = makeTempGallery();
 
     writeFile(path.join(root, "bali-sunrise", "02.jpg"));
@@ -122,7 +122,7 @@ describe("getGalleryTrips", () => {
     writeFile(path.join(root, "japan-autumn-2025", "01.png"));
 
     expect(getGalleryTrips(root).map((trip) => [trip.slug, trip.isFeatured])).toEqual([
-      ["bali-sunrise", true],
+      ["bali-sunrise", false],
       ["japan-autumn-2025", false],
     ]);
   });
@@ -156,7 +156,7 @@ describe("getGalleryTrips", () => {
           src: "/images/gallery/rome/01.jpg",
         },
         imageCount: 1,
-        isFeatured: true,
+        isFeatured: false,
         images: [
           {
             alt: "Rome photo 1",
@@ -194,7 +194,7 @@ describe("getGalleryTrips", () => {
           src: "/images/gallery/Bali Sunrise/01.jpg",
         },
         imageCount: 1,
-        isFeatured: true,
+        isFeatured: false,
         images: [
           {
             alt: "Bali Sunrise photo 1",

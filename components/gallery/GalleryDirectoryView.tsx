@@ -9,7 +9,8 @@ type GalleryDirectoryViewProps = {
 
 export function GalleryDirectoryView({ trips }: GalleryDirectoryViewProps) {
   const featuredTrip = getFeaturedGalleryTrip(trips);
-  const otherTrips = trips.filter((trip) => trip.slug !== featuredTrip?.slug);
+  const directoryTrips =
+    featuredTrip === null ? trips : trips.filter((trip) => trip.slug !== featuredTrip.slug);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-20">
@@ -23,7 +24,7 @@ export function GalleryDirectoryView({ trips }: GalleryDirectoryViewProps) {
         </p>
       </div>
 
-      {featuredTrip === null ? (
+      {trips.length === 0 ? (
         <div className="mt-12 rounded-3xl border border-border bg-card/40 p-8 sm:p-10">
           <p className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
             No journeys yet
@@ -34,62 +35,64 @@ export function GalleryDirectoryView({ trips }: GalleryDirectoryViewProps) {
         </div>
       ) : (
         <div className="mt-14 space-y-16 sm:space-y-20">
-          <section className="animate-in" style={{ "--stagger": 1 } as CSSProperties}>
-            <div className="flex items-center gap-4">
-              <h2 className="font-mono text-xs uppercase tracking-widest text-muted">
-                Featured journey
-              </h2>
-              <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
-            </div>
+          {featuredTrip !== null ? (
+            <section className="animate-in" style={{ "--stagger": 1 } as CSSProperties}>
+              <div className="flex items-center gap-4">
+                <h2 className="font-mono text-xs uppercase tracking-widest text-muted">
+                  Featured journey
+                </h2>
+                <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+              </div>
 
-            <div className="mt-6 overflow-hidden rounded-[2rem] border border-border bg-card/40">
-              <div className="grid gap-0 lg:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)]">
-                <Link
-                  href={`/gallery/${featuredTrip.slug}`}
-                  className="group relative block min-h-[20rem] overflow-hidden bg-card/60"
-                >
-                  <Image
-                    src={featuredTrip.coverImage.src}
-                    alt={featuredTrip.coverImage.alt}
-                    width={1600}
-                    height={1100}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                  />
-                </Link>
+              <div className="mt-6 overflow-hidden rounded-[2rem] border border-border bg-card/40">
+                <div className="grid gap-0 lg:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)]">
+                  <Link
+                    href={`/gallery/${featuredTrip.slug}`}
+                    className="group relative block min-h-[20rem] overflow-hidden bg-card/60"
+                  >
+                    <Image
+                      src={featuredTrip.coverImage.src}
+                      alt={featuredTrip.coverImage.alt}
+                      width={1600}
+                      height={1100}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    />
+                  </Link>
 
-                <div className="flex flex-col justify-center p-6 sm:p-8">
-                  <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent">
-                    Selected trip
-                  </p>
-                  <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-                    {featuredTrip.title}
-                  </h2>
-                  <p className="mt-4 text-sm text-muted sm:text-base">
-                    {featuredTrip.imageCount}{" "}
-                    {featuredTrip.imageCount === 1 ? "photo" : "photos"}
-                  </p>
-                  <p className="mt-4 max-w-md text-sm leading-relaxed text-muted sm:text-base">
-                    Start with the featured trip, then dip into the rest of the archive at your
-                    own pace.
-                  </p>
-                  <div className="mt-8">
-                    <Link
-                      href={`/gallery/${featuredTrip.slug}`}
-                      className="inline-flex rounded-full border border-accent/40 px-5 py-2.5 text-sm text-accent transition-colors hover:border-accent hover:bg-accent/10"
-                    >
-                      View featured gallery
-                    </Link>
+                  <div className="flex flex-col justify-center p-6 sm:p-8">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent">
+                      Selected trip
+                    </p>
+                    <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+                      {featuredTrip.title}
+                    </h2>
+                    <p className="mt-4 text-sm text-muted sm:text-base">
+                      {featuredTrip.imageCount}{" "}
+                      {featuredTrip.imageCount === 1 ? "photo" : "photos"}
+                    </p>
+                    <p className="mt-4 max-w-md text-sm leading-relaxed text-muted sm:text-base">
+                      Start with the featured trip, then dip into the rest of the archive at your
+                      own pace.
+                    </p>
+                    <div className="mt-8">
+                      <Link
+                        href={`/gallery/${featuredTrip.slug}`}
+                        className="inline-flex rounded-full border border-accent/40 px-5 py-2.5 text-sm text-accent transition-colors hover:border-accent hover:bg-accent/10"
+                      >
+                        View featured gallery
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          ) : null}
 
-          {otherTrips.length > 0 ? (
+          {directoryTrips.length > 0 ? (
             <section
               aria-label="All journeys"
               className="animate-in"
-              style={{ "--stagger": 2 } as CSSProperties}
+              style={{ "--stagger": featuredTrip === null ? 1 : 2 } as CSSProperties}
             >
               <div className="flex items-center gap-4">
                 <h2 className="font-mono text-xs uppercase tracking-widest text-muted">
@@ -99,7 +102,7 @@ export function GalleryDirectoryView({ trips }: GalleryDirectoryViewProps) {
               </div>
 
               <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {otherTrips.map((trip) => (
+                {directoryTrips.map((trip) => (
                   <Link
                     key={trip.slug}
                     href={`/gallery/${trip.slug}`}

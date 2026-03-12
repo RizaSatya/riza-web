@@ -102,8 +102,7 @@ function getGalleryTripCandidates(rootDir: string): GalleryTripCandidate[] {
 
 export function getGalleryTrips(rootDir = DEFAULT_GALLERY_ROOT): GalleryTrip[] {
   const candidates = getGalleryTripCandidates(rootDir);
-  const featuredSlug =
-    candidates.find((candidate) => candidate.hasFeaturedMarker)?.slug ?? candidates[0]?.slug;
+  const featuredSlug = candidates.find((candidate) => candidate.hasFeaturedMarker)?.slug;
 
   return candidates.map((candidate) => ({
     slug: candidate.slug,
@@ -123,7 +122,7 @@ export function getGalleryTripBySlug(
 }
 
 export function getFeaturedGalleryTrip(trips: GalleryTrip[]) {
-  return trips.find((trip) => trip.isFeatured) ?? trips[0] ?? null;
+  return trips.find((trip) => trip.isFeatured) ?? null;
 }
 
 export function getGallerySections(rootDir = DEFAULT_GALLERY_ROOT): GallerySection[] {
