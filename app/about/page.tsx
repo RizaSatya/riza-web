@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 const experience = [
   {
-    period: "March 2022 – 2024",
+    period: "March 2023 – Current",
     title: "Senior Software Engineer (Backend, DevOps)",
     company: "GoTo",
     bullets: [
@@ -30,8 +30,8 @@ const experience = [
     stack: "Ruby on Rails, GitOps, Gitlab CI/CD, Chef, Terraform/Terragrunt, Atlantis, GCP",
   },
   {
-    period: "March 2020 – March 2022",
-    title: "Mid Software Engineer (Backend)",
+    period: "Aug 2020 – March 2023",
+    title: "Software Engineer (Backend)",
     company: "GoTo",
     bullets: [
       "PIC for improving the team's critical backend services monitoring (serving ~20,000 req/sec). Instrumented using Prometheus + Grafana Agent for metrics scraping and Grafana for dashboard creation and alerting to comply with SLO/SLA.",
@@ -53,8 +53,8 @@ const experience = [
     stack: "Gitlab Pipeline, Vagrant, Ansible, Docker, Kubernetes, Helm",
   },
   {
-    period: "Aug 2019 – March 2020",
-    title: "Junior Software Engineer (Frontend, Backend)",
+    period: "Aug 2019 – Aug 2020",
+    title: "Associate Software Engineer (Frontend, Backend)",
     company: "GoTo",
     bullets: [
       "Led the front-end development of the company's profile page.",

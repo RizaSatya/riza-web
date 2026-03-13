@@ -12,13 +12,13 @@ Senior Software Engineer specializing in Platform Engineering and Backend system
 * **Standards & Reliability:** Maintained a strict $90\%$ test coverage threshold across projects and implemented Google Groups for IAM role binding.
 * **Technologies:** Ruby on Rails, GitOps, GitLab CI/CD, Chef, Terraform/Terragrunt, Atlantis, GCP.
 
-### Mid Software Engineer (Backend) | GoTo | March 2020 – March 2022
+### Software Engineer (Backend) | GoTo | March 2020 – March 2022
 * **High-Scale Observability:** Served as PIC for monitoring critical services handling $25,000$ requests per second. Instrumented Prometheus/Grafana stacks to ensure strict SLO/SLA compliance.
 * **Infrastructure Design:** Built new service infrastructure from scratch, including HAProxy load balancers, Kafka producers/consumers, and Redis clusters.
 * **Zero-Downtime Migrations:** Led the migration of a legacy in-house configuration management service used company-wide with zero downtime.
 * **Technologies:** Golang, Kafka, Redis, Prometheus, Grafana, New Relic.
 
-### Junior Software Engineer (Frontend, Backend) | GoTo | Aug 2019 – March 2020
+### Associate Software Engineer (Frontend, Backend) | GoTo | Aug 2019 – March 2020
 * **Frontend Leadership:** Led the development of the company’s profile page, advocating for and implementing **GatsbyJS** to improve SEO and performance.
 * **Backend Support:** Contributed to various Ruby on Rails microservices and collaborated with PMs on technical feasibility and project planning.
 * **Technologies:** JavaScript, React, GatsbyJS, Redux, Ruby on Rails.

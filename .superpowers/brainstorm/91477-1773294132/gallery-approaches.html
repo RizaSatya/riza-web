@@ -1,0 +1,118 @@
+<h2>Gallery Landing Page Directions</h2>
+<p class="subtitle">Each folder gets its own detail page. The question here is how the main <code>/gallery</code> page should introduce the archive.</p>
+
+<div class="cards" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">A. Featured + Directory</div>
+        <div class="mockup-body" style="display:grid; gap:12px;">
+          <div style="height:120px; border-radius:18px; background:linear-gradient(135deg, #4b5563, #111827); display:flex; align-items:end; padding:14px; color:#fff;">
+            Featured trip hero
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px;">
+            <div style="height:70px; border-radius:14px; background:#1f2937;"></div>
+            <div style="height:70px; border-radius:14px; background:#1f2937;"></div>
+            <div style="height:70px; border-radius:14px; background:#1f2937;"></div>
+            <div style="height:70px; border-radius:14px; background:#1f2937;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Featured + Directory</h3>
+      <p>One highlighted trip sets the tone, while the rest of the folders stay scannable as clean cover cards below.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Strong first impression</li>
+            <li>Fast initial scan</li>
+            <li>Still exposes the full archive</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Needs a rule for which trip is featured</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">B. Equal Directory</div>
+        <div class="mockup-body" style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px;">
+          <div style="height:88px; border-radius:14px; background:#1f2937;"></div>
+          <div style="height:88px; border-radius:14px; background:#1f2937;"></div>
+          <div style="height:88px; border-radius:14px; background:#1f2937;"></div>
+          <div style="height:88px; border-radius:14px; background:#1f2937;"></div>
+          <div style="height:88px; border-radius:14px; background:#1f2937;"></div>
+          <div style="height:88px; border-radius:14px; background:#1f2937;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Equal Directory</h3>
+      <p>Every folder is treated the same: a calm grid of cover-image cards with no featured destination.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Simplest information architecture</li>
+            <li>No editorial choice needed</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Less personality</li>
+            <li>Weaker visual hierarchy</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">C. Expandable Sections</div>
+        <div class="mockup-body" style="display:grid; gap:10px;">
+          <div style="height:50px; border-radius:14px; background:#1f2937;"></div>
+          <div style="height:92px; border-radius:14px; background:linear-gradient(180deg, #111827, #374151);"></div>
+          <div style="height:50px; border-radius:14px; background:#1f2937;"></div>
+          <div style="height:50px; border-radius:14px; background:#1f2937;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Expandable Sections</h3>
+      <p>The landing page remains the archive, but folders stay collapsed until a visitor opens one inline.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Keeps everything on one route</li>
+            <li>Less jarring than a giant full-page wall</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Still mixes landing and browsing roles</li>
+            <li>Heavier interaction state</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <p class="label">Recommendation</p>
+  <p>Approach A is the strongest fit for this site: it gives <code>/gallery</code> a deliberate editorial feel, reduces visual overload, and still leaves room for a clean folder detail page.</p>
+</div>
