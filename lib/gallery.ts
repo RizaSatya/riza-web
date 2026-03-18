@@ -42,6 +42,10 @@ const GALLERY_MONTHS = [
   "November",
   "December",
 ] as const;
+const GALLERY_FILENAME_COLLATOR = new Intl.Collator(undefined, {
+  numeric: true,
+  sensitivity: "base",
+});
 
 export function isSupportedGalleryImage(filename: string) {
   return SUPPORTED_EXTENSIONS.has(path.extname(filename).toLowerCase());
@@ -71,6 +75,14 @@ export function formatGalleryDate(value: string) {
 
   const monthIndex = Number(match[1]) - 1;
   return `${GALLERY_MONTHS[monthIndex]} ${match[2]}`;
+}
+
+function createGalleryImageSrc(directoryName: string, filename: string) {
+  return `/images/gallery/${encodeURIComponent(directoryName)}/${encodeURIComponent(filename)}`;
+}
+
+function compareGalleryFilenames(a: string, b: string) {
+  return GALLERY_FILENAME_COLLATOR.compare(a, b);
 }
 
 type GalleryMetadata = {
@@ -164,9 +176,9 @@ function getGalleryTripCandidates(rootDir: string): GalleryTripCandidate[] {
       const metadata = readGalleryMetadata(sectionRoot);
       const images = entries
         .filter(isSupportedGalleryImage)
-        .sort((a, b) => a.localeCompare(b))
+        .sort(compareGalleryFilenames)
         .map((filename, index) => ({
-          src: `/images/gallery/${directory.name}/${filename}`,
+          src: createGalleryImageSrc(directory.name, filename),
           alt: `${title} photo ${index + 1}`,
         }));
 

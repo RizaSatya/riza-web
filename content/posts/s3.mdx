@@ -1,0 +1,167 @@
+---
+title: "How We Handle Image Uploads and Reads with Cloud Storage"
+date: "2024-08-01"
+excerpt: ""
+tags: ["S3"]
+draft: false
+---
+
+## The Core Tension
+
+Uploading an image to cloud storage is easy. Building an image flow that stays fast, controlled, and maintainable over time is not.
+
+In practice, the problem is rarely "how do we store a file?" The harder question is how to divide responsibility between the client, the backend, the storage layer, and the CDN without letting those boundaries become blurry.
+
+We have found that this is where many media pipelines become harder than they first appear. If the backend receives every upload and serves every read directly, it becomes a bottleneck. If the client talks to storage with no application mediation, the system becomes harder to govern. If public read URLs expose storage details directly, infrastructure choices leak into the product surface.
+
+The shape that has worked well for us is simple in principle: let storage handle bytes, let the backend handle policy, and keep the public contract owned by the application.
+
+That is the approach this post walks through.
+
+## What We Optimize For
+
+Before getting into endpoints, it helps to make the goals explicit. In our experience, image infrastructure gets easier to reason about once the intended responsibilities are clear.
+
+First, we want the backend to authorize uploads without proxying file bytes. The application layer is the right place for validation, rate limiting, app-level policy, and URL generation. It is usually not the right place to sit in the middle of every large upload.
+
+Second, we want storage to handle the actual transfer. Once the application decides an upload should be allowed, the client should send the raw image directly to S3 or Google Cloud Storage using a short-lived signed URL.
+
+Third, we want the application to own the public read URL. Clients should not need to know whether the underlying object lives in S3, GCS, behind a CDN, or under a different bucket layout later. A stable application-owned URL gives us room to evolve the infrastructure without changing the contract.
+
+Fourth, we want reads to prefer the CDN without depending on it absolutely. The ideal case is fast cached delivery. The safer case is that reads still succeed even if the CDN path is unavailable.
+
+These are not abstract ideals. They directly shape the upload and read flow.
+
+## The Upload Flow
+
+The upload path starts with a permission request, not with file bytes.
+
+In the approach we use, the client first asks the backend for a presigned upload URL:
+
+`POST /darkroom/{appName}/v1/images/presigned-urls`
+
+with a header such as `X_Owner_Id` and a body like:
+
+```json
+{
+  "file": "profile-photo.jpg"
+}
+```
+
+At this point, the backend is not receiving the image itself. It is receiving intent. The client is effectively saying: "I want to upload this file under this application context. Can you authorize it and give me the correct path?"
+
+The backend then performs the checks that belong to the application layer:
+
+1. Validate the required header, JSON body, and image extension.
+2. Check the upload rate limit for the owner.
+3. Load application configuration using `appName`.
+4. Verify that public upload is allowed for that application.
+5. Generate the storage key.
+6. Request a signed upload URL from the storage provider.
+7. Build the public URL that will later be used for reads.
+
+If those checks pass, the backend returns a response containing two distinct URLs:
+
+```json
+{
+  "success": true,
+  "data": {
+    "uploadURL": "https://storage.example.com/bucket/images/7f9c2d5e-profile-photo.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Expires=900&X-Amz-Signature=example",
+    "publicURL": "https://darkroom.example.com/darkroom/my-app/v2/images/7f9c2d5e-profile-photo.jpg"
+  }
+}
+```
+
+This distinction is the heart of the design.
+
+The `uploadURL` is temporary and infrastructure-specific. It exists for one purpose: allowing the client to send file bytes directly to storage. The `publicURL` is stable and application-owned. It is the address the rest of the system should care about.
+
+After that, the client uploads the raw bytes directly to storage:
+
+`PUT {uploadURL}`
+
+with an appropriate content type such as `image/jpeg`.
+
+At that point, the backend is no longer in the data path for the upload itself. That is intentional. The backend makes the policy decision once, then steps out of the way of the large payload.
+
+The lesson here is straightforward: if your backend’s real job is authorization, then let it authorize. Do not force it to become a file transfer proxy unless you have a specific reason to do so.
+
+## The Read Flow
+
+The read path uses the opposite boundary. Uploads can go directly to storage after authorization, but reads come back through an application-owned public URL.
+
+In our case, the public read path looks roughly like this:
+
+1. The client requests `publicURL`.
+2. The application checks the relevant app configuration.
+3. If a CDN URL such as `CloudFrontURL` exists, it tries the CDN first.
+4. If the CDN request fails, it falls back to S3 or GCS.
+5. The application returns the final image response.
+
+This matters because a public URL is more than a file locator. It is a contract boundary.
+
+When clients use an application-owned URL, they do not need to know where the object is stored, whether it was served from cache, or whether the team changed CDN or bucket strategy later. That complexity stays behind the backend boundary, where it can evolve without becoming a breaking change for callers.
+
+The CDN-first behavior gives us the fast path we want in the common case. Cached reads stay closer to the edge, reduce latency, and take pressure off the origin. The storage fallback gives us a better failure mode. A cache miss or CDN problem does not automatically become a broken image for the end user.
+
+The broader lesson is that CDN is usually an optimization layer, not the primary contract. If you treat it as the only path, you often make the system faster in the happy case but more fragile in the unusual one.
+
+## What Readers Can Borrow From This
+
+The key distinction is that upload control and byte transfer do not have to live in the same place.
+
+Many teams start with a simpler model: the backend accepts multipart uploads, streams the file, stores it, and later serves it back directly. That model is understandable, and sometimes it is good enough. But over time it tends to mix policy, transfer, storage, and delivery concerns into one path.
+
+The split approach creates cleaner boundaries:
+
+- The backend owns validation, authorization, rate limiting, and public contracts.
+- Storage owns durable object storage and upload transfer.
+- The CDN owns acceleration and cache distribution.
+- The client only needs to follow the contract, not understand the infrastructure.
+
+That separation has been the durable part for us. Even if implementation details change, the responsibilities remain legible.
+
+If you are building something similar, there are three practical ideas worth borrowing:
+
+1. Authorize first, upload directly.
+2. Keep read URLs application-owned.
+3. Treat CDN as a preferred path, not the only path.
+
+None of these ideas are especially novel on their own. What matters is combining them into a system where each layer has a clear job.
+
+## Trade-Offs and Caveats
+
+This approach is not free.
+
+Presigned upload URLs need careful scope and short expiry. A signed URL is effectively a temporary capability token. If it lives too long or grants too much, the system becomes harder to reason about.
+
+Public upload still needs strong application-level safeguards. Rate limiting, input validation, and per-application configuration such as `AllowPublicUpload` are not optional. Without them, direct upload becomes less of an architecture pattern and more of an exposed write surface.
+
+CDN fallback is useful, but it can also hide operational issues. If every failed CDN request quietly falls back to origin, readers may never notice a problem while the platform team loses visibility into cache quality. Availability improves, but observability can get worse unless the fallback path is measured deliberately.
+
+Stable public URLs also create a long-term responsibility. Once the application owns the read contract, it owns compatibility. That is usually the right trade, but it means URL design should be treated as an interface decision, not a temporary implementation detail.
+
+## Recommended Default
+
+For most teams building product-facing media flows, the baseline we would recommend is:
+
+- authorize uploads in the backend
+- upload file bytes directly to cloud storage using short-lived signed URLs
+- expose a stable application-owned public URL for reads
+- prefer CDN on the read path, with a controlled fallback to storage
+
+This is not the smallest possible design. It is the most balanced one we have found.
+
+It keeps the backend responsible for the parts that require application judgment. It lets storage and CDN handle the parts they are built for. Most importantly, it creates a cleaner contract between infrastructure and product.
+
+That is the deeper principle behind the implementation. The goal is not simply to "use presigned URLs." The goal is to keep responsibility in the right layer of the system.
+
+## Closing Thought
+
+Cloud storage makes moving bytes cheap and scalable. But image delivery was never only a storage problem.
+
+The fundamental problem is ownership. Who decides whether an upload is allowed? Who defines the public URL? Who absorbs infrastructure changes without forcing every client to care?
+
+In our experience, once those answers are clear, the upload and read flow becomes much easier to design. Storage handles the bytes. CDN handles acceleration. The application keeps control of the contract.
+
+That is the part we think is worth sharing. The specific tools may change. The responsibility split tends to hold.
