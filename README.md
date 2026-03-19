@@ -36,6 +36,38 @@ docker run --rm -p 3000:3000 web-riza
 
 The image uses a multi-stage build and serves the Next.js standalone output with Node 22.
 
+## OpenTelemetry
+
+The app registers server-side OpenTelemetry via `instrumentation.ts` and exports telemetry over OTLP HTTP when the container is started with the appropriate environment variables.
+
+Example runtime configuration for an in-cluster collector on port `4318`:
+
+```bash
+OTEL_SERVICE_NAME=web-riza
+OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector.default.svc.cluster.local:4318/v1/traces
+OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://otel-collector.default.svc.cluster.local:4318/v1/metrics
+```
+
+Custom application telemetry is emitted for the OpenRouter-backed chat routes:
+
+- `external_api.calls`
+- `external_api.duration`
+
+Both metrics use low-cardinality attributes:
+
+- `provider`
+- `route`
+- `model`
+- `outcome`
+
+### Validate Telemetry
+
+1. Deploy the container with the OTLP HTTP variables above.
+2. Send traffic to `/api/chat` or `/api/chat/post`.
+3. Confirm request traces arrive in your collector/backend.
+4. Confirm `external_api.calls` and `external_api.duration` appear with `provider=openrouter` and route labels for the two chat endpoints.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
