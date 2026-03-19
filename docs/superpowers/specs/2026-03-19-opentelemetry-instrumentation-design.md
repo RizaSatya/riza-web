@@ -52,6 +52,20 @@ For application-specific telemetry, add a small server-only helper that owns cus
 - Target the shared in-cluster collector on port `4318`.
 - Support metrics export to the collector's OTLP HTTP metrics path.
 
+## Runtime Configuration
+
+The application should document and rely on environment variables for export behavior rather than embedding collector details in code.
+
+Expected configuration:
+
+- `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf`
+- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://<collector-service>:4318/v1/traces`
+- `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT=http://<collector-service>:4318/v1/metrics`
+
+Optional configuration:
+
+- `OTEL_SERVICE_NAME=web-riza` when deployment wants to override the default code-level service name
+
 ## Telemetry Model
 
 ### Traces
@@ -73,6 +87,20 @@ Add application metrics that are not guaranteed by default framework instrumenta
 
 This allows the observability backend to derive OpenRouter success rate from `outcome=success|error` rather than depending on generic HTTP spans alone.
 
+Attribute values should stay low-cardinality and must not include request payloads, prompts, or user identifiers.
+
+## Success Semantics
+
+Because the chat routes use `streamText(...)`, the design must define what a successful external call means.
+
+For this iteration:
+
+- Count `outcome=success` when the OpenRouter request is accepted and the stream response is created successfully.
+- Count `outcome=error` when `streamText(...)` throws or the route cannot create the response stream.
+- Treat the duration metric as time-to-stream-start for the OpenRouter request, not full end-to-end client streaming time.
+
+This keeps the first implementation simple and avoids coupling the metric to downstream client disconnect behavior. If full stream completion metrics are needed later, add separate stream lifecycle instrumentation instead of overloading the initial success-rate metric.
+
 ## Data Flow
 
 1. A request enters `/api/chat` or `/api/chat/post`.
@@ -87,6 +115,7 @@ This allows the observability backend to derive OpenRouter success rate from `ou
 - Telemetry failures must not fail the request path.
 - OpenRouter failures should be reflected in both span status and the `outcome=error` metric series.
 - Telemetry attributes must not include prompt content, message content, or other sensitive request payloads.
+- Mid-stream response failures are out of scope for the first success-rate metric unless they prevent the response stream from being created.
 
 ## Required Repository Changes
 
